@@ -55,12 +55,31 @@
         window.addDoc = addDoc;
         window.deleteDoc = deleteDoc;
 
-        // Escutar atualizações do Evento em Destaque AO VIVO
+        // Escutar status do CULTO AO VIVO e EVENTO DESTAQUE AO VIVO
         onSnapshot(doc(db, "configuracoes", "destaque"), (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
                 
-                // Controle de exibição (sem evento / visível)
+                // Controle de Ao Vivo
+                const bannerAoVivo = document.getElementById('bannerAoVivo');
+                if (data.aoVivo === true) {
+                    bannerAoVivo.classList.remove('hidden');
+                } else {
+                    bannerAoVivo.classList.add('hidden');
+                }
+                document.getElementById('admAoVivoCheck').checked = data.aoVivo === true;
+
+                // Atualizar links das transmissões ao vivo
+                const defaultYtb = "https://www.youtube.com/@QuadrangularPampulhaAgudosSP";
+                const defaultFb = "https://www.facebook.com/QuadrangularPampulhaAgudos?locale=pt_BR";
+
+                document.getElementById('btnLiveYtb').href = data.linkYtb || defaultYtb;
+                document.getElementById('btnLiveFb').href = data.linkFb || defaultFb;
+
+                document.getElementById('admAoVivoYtb').value = data.linkYtb || '';
+                document.getElementById('admAoVivoFb').value = data.linkFb || '';
+
+                // Controle de Evento Destaque
                 const containerDestaque = document.getElementById('cardDestaqueContainer');
                 if (data.ativo === false) {
                     containerDestaque.classList.add('hidden');
@@ -101,6 +120,15 @@
             });
             window.renderizarTestemunhosAdmin(listaTest);
         });
+
+        // Escutar Agenda do Mês AO VIVO
+        onSnapshot(collection(db, "agenda"), (snapshot) => {
+            const listaAgenda = [];
+            snapshot.forEach((doc) => {
+                listaAgenda.push({ id: doc.id, ...doc.data() });
+            });
+            window.renderizarAgendaGeral(listaAgenda);
+        });
     </script>
 
     <style>
@@ -138,16 +166,23 @@
         </div>
     </header>
 
-    <!-- BANNER DE CULTO AO VIVO -->
-    <div id="bannerAoVivo" class="bg-red-600 text-white py-2.5 px-4 text-xs font-bold text-center flex items-center justify-center gap-2 shadow-inner">
-        <span class="relative flex h-3 w-3">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
-        </span>
-        <span>ESTAMOS AO VIVO! Acompanhe o Culto agora no YouTube:</span>
-        <a href="https://www.youtube.com/@QuadrangularPampulhaAgudosSP" target="_blank" class="bg-white text-red-600 hover:bg-slate-100 px-3 py-1 rounded-full font-extrabold text-[11px] transition shadow-sm inline-flex items-center gap-1">
-            <i class="fa-brands fa-youtube"></i> Assistir Culto
-        </a>
+    <!-- BANNER DE CULTO AO VIVO (YouTube + Facebook) -->
+    <div id="bannerAoVivo" class="hidden bg-red-600 text-white py-2.5 px-4 text-xs font-bold text-center flex flex-wrap items-center justify-center gap-2.5 shadow-inner">
+        <div class="flex items-center gap-2">
+            <span class="relative flex h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+            </span>
+            <span>ESTAMOS AO VIVO! Acompanhe o Culto:</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <a id="btnLiveYtb" href="https://www.youtube.com/@QuadrangularPampulhaAgudosSP" target="_blank" class="bg-white text-red-600 hover:bg-slate-100 px-3 py-1 rounded-full font-extrabold text-[11px] transition shadow-sm inline-flex items-center gap-1.5">
+                <i class="fa-brands fa-youtube text-sm"></i> YouTube
+            </a>
+            <a id="btnLiveFb" href="https://www.facebook.com/QuadrangularPampulhaAgudos?locale=pt_BR" target="_blank" class="bg-blue-900 text-white hover:bg-blue-950 px-3 py-1 rounded-full font-extrabold text-[11px] transition shadow-sm inline-flex items-center gap-1.5">
+                <i class="fa-brands fa-facebook-f text-xs"></i> Facebook
+            </a>
+        </div>
     </div>
 
     <!-- Conteúdo Principal -->
@@ -189,7 +224,7 @@
                 <p class="text-xs font-bold text-right text-ieq-green">— Jeremias 29:11</p>
             </div>
 
-            <!-- CARD DE EVENTO EM DESTAQUE (Pode ser ativado ou desativado via Admin) -->
+            <!-- CARD DE EVENTO EM DESTAQUE -->
             <div id="cardDestaqueContainer" class="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
                 <div class="relative h-48 sm:h-56 w-full bg-slate-100">
                     <img id="destaqueImagem" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1000&q=80" alt="Evento em Destaque" class="w-full h-full object-cover">
@@ -214,7 +249,7 @@
                 </div>
             </div>
 
-            <!-- AGENDA DE EVENTOS DO MÊS -->
+            <!-- AGENDA DE EVENTOS DO MÊS (DINÂMICA VIA FIREBASE) -->
             <div class="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-sm space-y-3">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                     <div class="flex items-center space-x-2">
@@ -228,50 +263,8 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex items-center space-x-3">
-                        <div class="bg-amber-500 text-white px-3 py-2 rounded-xl text-center font-bold min-w-[50px]">
-                            <span class="block text-xs uppercase">DOM</span>
-                            <span class="text-base">01</span>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-xs text-slate-900">Culto de Santa Ceia</h4>
-                            <p class="text-[11px] text-slate-500">18h30 • Templo Principal</p>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex items-center space-x-3">
-                        <div class="bg-ieq-green text-slate-950 px-3 py-2 rounded-xl text-center font-bold min-w-[50px]">
-                            <span class="block text-xs uppercase">SÁB</span>
-                            <span class="text-base">14</span>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-xs text-slate-900">Culto de Jovens & Células</h4>
-                            <p class="text-[11px] text-slate-500">19h30 • Louvor e Palavra</p>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex items-center space-x-3">
-                        <div class="bg-purple-600 text-white px-3 py-2 rounded-xl text-center font-bold min-w-[50px]">
-                            <span class="block text-xs uppercase">SEX</span>
-                            <span class="text-base">20</span>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-xs text-slate-900">Consagração de Mulheres</h4>
-                            <p class="text-[11px] text-slate-500">19h30 • Grupo de Mulheres</p>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex items-center space-x-3">
-                        <div class="bg-blue-600 text-white px-3 py-2 rounded-xl text-center font-bold min-w-[50px]">
-                            <span class="block text-xs uppercase">DOM</span>
-                            <span class="text-base">29</span>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-xs text-slate-900">Grande Batismo nas Águas</h4>
-                            <p class="text-[11px] text-slate-500">09h00 • Celebração Especial</p>
-                        </div>
-                    </div>
+                <div id="containerAgendaPublica" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <p class="text-xs text-slate-400 italic col-span-2">A carregar eventos da agenda...</p>
                 </div>
             </div>
 
@@ -457,7 +450,6 @@
         <!-- ================= ABA 2: DEDICADA EXCLUSIVAMENTE AO VISITANTE ================= -->
         <div id="viewVisitante" class="space-y-5 hidden">
             
-            <!-- Cartão Especial de Boas-Vindas com Versículo -->
             <div class="bg-gradient-to-br from-emerald-900 to-slate-900 text-white p-6 sm:p-8 rounded-3xl shadow-md space-y-4 relative overflow-hidden">
                 <div class="absolute -right-6 -bottom-6 w-36 h-36 bg-ieq-green/10 rounded-full blur-2xl"></div>
                 
@@ -469,7 +461,6 @@
                     A sua presença é extremamente importante para nós!
                 </h2>
 
-                <!-- Versículo Salmo 122:1 -->
                 <blockquote class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/15 italic text-xs sm:text-sm text-emerald-100 leading-relaxed">
                     "Alegrei-me com os que me disseram: 'Vamos à casa do Senhor!'"
                     <span class="block mt-2 font-bold text-right text-ieq-green not-italic">— Salmos 122:1</span>
@@ -492,7 +483,6 @@
                 </div>
             </div>
 
-            <!-- Formulário com as Perguntas -->
             <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-5">
                 <div class="border-b border-slate-100 pb-3">
                     <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
@@ -522,7 +512,6 @@
                         </div>
                     </div>
 
-                    <!-- Perguntas sobre Família e Acompanhantes -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Trouxe sua família?</label>
@@ -641,6 +630,7 @@
             <div class="flex space-x-2 border-b border-slate-200 pb-2 flex-wrap gap-y-1">
                 <button onclick="switchAdminTab('visitantes')" id="tabVisBtn" class="px-3.5 py-2 text-xs font-bold rounded-xl bg-ieq-green text-slate-950 transition">Cadastros</button>
                 <button onclick="switchAdminTab('testemunhos')" id="tabTestBtn" class="px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Testemunhos</button>
+                <button onclick="switchAdminTab('agenda')" id="tabAgendaBtn" class="px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Agenda do Mês</button>
                 <button onclick="switchAdminTab('destaque')" id="tabDestBtn" class="px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Evento Destaque</button>
             </div>
 
@@ -683,15 +673,95 @@
                 </div>
             </div>
 
-            <!-- Conteúdo Admin 3: Gerenciar Destaque (Com Opção Sem Evento) -->
+            <!-- Conteúdo Admin 3: GERENCIAR AGENDA DO MÊS -->
+            <div id="adminTabAgenda" class="space-y-4 hidden bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm">
+                <div class="border-b border-slate-100 pb-2">
+                    <h3 class="font-bold text-sm text-slate-900">Gerenciar Agenda do Mês</h3>
+                    <p class="text-xs text-slate-400">Adicione ou remova os eventos especiais que aparecem no calendário da página inicial.</p>
+                </div>
+
+                <form onsubmit="adicionarEventoAgenda(event)" class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+                    <h4 class="font-bold text-xs text-slate-800 uppercase tracking-wider">Adicionar Novo Evento à Agenda</h4>
+                    
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-700 mb-1">Dia (Número)</label>
+                            <input type="text" id="agendaDiaNum" required placeholder="Ex: 01" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-700 mb-1">Dia da Semana</label>
+                            <input type="text" id="agendaDiaSemana" required placeholder="Ex: DOM, SÁB" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800">
+                        </div>
+                        <div class="col-span-2 sm:col-span-1">
+                            <label class="block text-[11px] font-bold text-slate-700 mb-1">Cor do Marcador</label>
+                            <select id="agendaCor" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800">
+                                <option value="bg-amber-500">Laranja / Dourado</option>
+                                <option value="bg-ieq-green text-slate-950">Verde IEQ</option>
+                                <option value="bg-purple-600">Roxo</option>
+                                <option value="bg-blue-600">Azul</option>
+                                <option value="bg-red-600">Vermelho</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Título do Evento</label>
+                        <input type="text" id="agendaTitulo" required placeholder="Ex: Culto de Santa Ceia" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800">
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Horário / Descrição Curta</label>
+                        <input type="text" id="agendaDesc" required placeholder="Ex: 18h30 • Templo Principal" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800">
+                    </div>
+
+                    <button type="submit" class="bg-ieq-green hover:bg-ieq-greenHover text-slate-950 font-bold px-4 py-2 rounded-xl text-xs transition shadow-sm w-full">
+                        + Adicionar Evento na Agenda
+                    </button>
+                </form>
+
+                <div class="space-y-2 pt-2">
+                    <h4 class="font-bold text-xs text-slate-800 border-b border-slate-100 pb-1">Eventos Atuais na Agenda:</h4>
+                    <div id="listaAgendaAdmin" class="space-y-2">
+                        <p class="text-xs text-slate-400 italic">Nenhum evento adicionado na agenda.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conteúdo Admin 4: Gerenciar Destaque & Culto Ao Vivo -->
             <div id="adminTabDestaque" class="space-y-4 hidden bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm">
                 <div class="border-b border-slate-100 pb-2">
-                    <h3 class="font-bold text-sm text-slate-900">Editar Evento em Destaque (Banner do Topo)</h3>
-                    <p class="text-xs text-slate-400">Atualize ou oculte o banner principal que aparece na tela inicial.</p>
+                    <h3 class="font-bold text-sm text-slate-900">Editar Transmissão Ao Vivo & Evento em Destaque</h3>
+                    <p class="text-xs text-slate-400">Ative as lives e cole o link direto das transmissões no YouTube e Facebook.</p>
                 </div>
 
                 <form onsubmit="salvarDestaqueFirebase(event)" class="space-y-3.5">
                     
+                    <!-- OPÇÃO CULTO AO VIVO COM LINKS DIRETO -->
+                    <div class="bg-red-50 p-4 rounded-2xl border border-red-200 space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" id="admAoVivoCheck" class="w-5 h-5 text-red-600 rounded accent-red-600 cursor-pointer">
+                            <label for="admAoVivoCheck" class="text-xs font-bold text-red-900 cursor-pointer">
+                                🔴 ESTAMOS AO VIVO AGORA (Exibir faixa vermelha no topo)
+                            </label>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-700 mb-1">
+                                    <i class="fa-brands fa-youtube text-red-600 mr-1"></i> Link da Live no YouTube (Opcional)
+                                </label>
+                                <input type="text" id="admAoVivoYtb" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800" placeholder="https://youtube.com/live/exemplo">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-700 mb-1">
+                                    <i class="fa-brands fa-facebook-f text-blue-600 mr-1"></i> Link da Live no Facebook (Opcional)
+                                </label>
+                                <input type="text" id="admAoVivoFb" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800" placeholder="https://facebook.com/live/exemplo">
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-slate-500 italic">Caso deixe os links em branco, o site usará os links padrão dos canais oficiais.</p>
+                    </div>
+
                     <!-- OPÇÃO DE DEIXAR SEM EVENTO / EXIBIR BANNER -->
                     <div class="bg-amber-50 p-3.5 rounded-2xl border border-amber-200 flex items-center space-x-3">
                         <input type="checkbox" id="admDestAtivo" class="w-5 h-5 text-ieq-green rounded accent-ieq-green cursor-pointer" checked>
@@ -736,7 +806,7 @@
                     </div>
 
                     <button type="submit" class="bg-ieq-green hover:bg-ieq-greenHover text-slate-950 font-bold px-5 py-2.5 rounded-xl text-xs transition shadow-sm w-full sm:w-auto">
-                        Salvar Configurações do Evento 🚀
+                        Salvar Configurações 🚀
                     </button>
                 </form>
             </div>
@@ -829,10 +899,12 @@
         function switchAdminTab(tab) {
             document.getElementById('adminTabVisitantes').classList.add('hidden');
             document.getElementById('adminTabTestemunhos').classList.add('hidden');
+            document.getElementById('adminTabAgenda').classList.add('hidden');
             document.getElementById('adminTabDestaque').classList.add('hidden');
 
             document.getElementById('tabVisBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
             document.getElementById('tabTestBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
+            document.getElementById('tabAgendaBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
             document.getElementById('tabDestBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
 
             if (tab === 'visitantes') {
@@ -841,6 +913,9 @@
             } else if (tab === 'testemunhos') {
                 document.getElementById('adminTabTestemunhos').classList.remove('hidden');
                 document.getElementById('tabTestBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-amber-500 text-slate-950 transition";
+            } else if (tab === 'agenda') {
+                document.getElementById('adminTabAgenda').classList.remove('hidden');
+                document.getElementById('tabAgendaBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-ieq-orange text-white transition";
             } else if (tab === 'destaque') {
                 document.getElementById('adminTabDestaque').classList.remove('hidden');
                 document.getElementById('tabDestBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-ieq-green text-slate-950 transition";
@@ -894,6 +969,29 @@
             }
         }
 
+        async function adicionarEventoAgenda(e) {
+            e.preventDefault();
+            const novoEvento = {
+                diaNum: document.getElementById('agendaDiaNum').value,
+                diaSemana: document.getElementById('agendaDiaSemana').value,
+                cor: document.getElementById('agendaCor').value,
+                titulo: document.getElementById('agendaTitulo').value,
+                desc: document.getElementById('agendaDesc').value,
+                criadoEm: new Date().getTime()
+            };
+
+            try {
+                await window.addDoc(window.collection(window.dbFirestore, "agenda"), novoEvento);
+                document.getElementById('agendaDiaNum').value = '';
+                document.getElementById('agendaDiaSemana').value = '';
+                document.getElementById('agendaTitulo').value = '';
+                document.getElementById('agendaDesc').value = '';
+                mostrarToast("Evento adicionado à Agenda do Mês!");
+            } catch (err) {
+                alert("Erro ao adicionar evento na agenda.");
+            }
+        }
+
         function copiarPix() {
             navigator.clipboard.writeText("igrejaquadrangularpampulha@gmail.com");
             mostrarToast("Chave PIX copiada com sucesso!");
@@ -913,12 +1011,22 @@
             }
         }
 
+        async function removerEventoAgenda(id) {
+            if (confirm("Deseja remover este evento da agenda?")) {
+                await window.deleteDoc(window.doc(window.dbFirestore, "agenda", id));
+                mostrarToast("Evento removido da agenda.");
+            }
+        }
+
         async function salvarDestaqueFirebase(e) {
             e.preventDefault();
             const urlLink = document.getElementById('admDestImg').value;
             const imgFinal = imagemTemporariaBase64 || urlLink || document.getElementById('destaqueImagem').src;
 
             const dadosDestaque = {
+                aoVivo: document.getElementById('admAoVivoCheck').checked,
+                linkYtb: document.getElementById('admAoVivoYtb').value,
+                linkFb: document.getElementById('admAoVivoFb').value,
                 ativo: document.getElementById('admDestAtivo').checked,
                 titulo: document.getElementById('admDestTitulo').value,
                 imagem: imgFinal,
@@ -931,9 +1039,9 @@
                 await window.setDoc(window.doc(window.dbFirestore, "configuracoes", "destaque"), dadosDestaque);
                 imagemTemporariaBase64 = null;
                 document.getElementById('admDestFile').value = '';
-                mostrarToast("Configurações do evento atualizadas!");
+                mostrarToast("Configurações atualizadas com sucesso!");
             } catch (err) {
-                alert("Erro ao atualizar o evento no banco de dados.");
+                alert("Erro ao atualizar configurações no banco de dados.");
             }
         }
 
@@ -1014,6 +1122,48 @@
                     </div>
                 `;
             }).join('') || '<p class="text-xs text-slate-400 italic">Nenhum testemunho recebido ainda.</p>';
+        };
+
+        window.renderizarAgendaGeral = function(agenda) {
+            agenda.sort((a, b) => parseInt(a.diaNum || 0) - parseInt(b.diaNum || 0));
+
+            const pubContainer = document.getElementById('containerAgendaPublica');
+            if (agenda.length === 0) {
+                pubContainer.innerHTML = '<p class="text-xs text-slate-400 italic col-span-2 text-center py-2">Nenhum evento agendado para este mês.</p>';
+            } else {
+                pubContainer.innerHTML = agenda.map(item => `
+                    <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex items-center space-x-3">
+                        <div class="${item.cor || 'bg-amber-500 text-white'} px-3 py-2 rounded-xl text-center font-bold min-w-[50px] shadow-sm">
+                            <span class="block text-[10px] uppercase">${item.diaSemana || 'DIA'}</span>
+                            <span class="text-base leading-none">${item.diaNum || '00'}</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-xs text-slate-900">${item.titulo}</h4>
+                            <p class="text-[11px] text-slate-500">${item.desc}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const admContainer = document.getElementById('listaAgendaAdmin');
+            if (agenda.length === 0) {
+                admContainer.innerHTML = '<p class="text-xs text-slate-400 italic">Nenhum evento na agenda.</p>';
+            } else {
+                admContainer.innerHTML = agenda.map(item => `
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex justify-between items-center">
+                        <div class="flex items-center space-x-3">
+                            <span class="${item.cor || 'bg-amber-500 text-white'} px-2.5 py-1 rounded-lg text-xs font-bold">${item.diaNum} (${item.diaSemana})</span>
+                            <div>
+                                <h5 class="font-bold text-xs text-slate-900">${item.titulo}</h5>
+                                <p class="text-[11px] text-slate-500">${item.desc}</p>
+                            </div>
+                        </div>
+                        <button onclick="removerEventoAgenda('${item.id}')" class="bg-red-100 hover:bg-red-200 text-red-600 p-2 rounded-xl text-xs" title="Excluir Evento">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
         };
     </script>
 </body>
