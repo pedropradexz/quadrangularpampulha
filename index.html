@@ -133,33 +133,39 @@
 
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        /* Esconder scrollbar mantendo o scroll funcional */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="bg-ieq-cream text-slate-800 min-h-screen flex flex-col">
 
-    <!-- Topo / Cabeçalho com Navegação por Abas -->
+    <!-- Topo / Cabeçalho com Navegação por Abas Responsiva -->
     <header class="bg-white border-b border-slate-200/80 sticky top-0 z-50 shadow-sm">
-        <div class="max-w-3xl mx-auto px-4 py-3 flex justify-between items-center flex-wrap gap-2">
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('portal')">
-                <img src="logo.jpg" onerror="this.src='271209529_3244963695727261_483985416568424838_n.jpg'" alt="Logo Quadrangular Pampulha" class="w-10 h-10 rounded-xl object-cover shadow-sm border border-slate-100">
-                <div>
-                    <h1 class="font-bold text-sm sm:text-base text-slate-900 leading-tight">Quadrangular Pampulha</h1>
-                    <p class="text-[11px] text-slate-500 font-medium">3ª IEQ Agudos - SP</p>
+        <div class="max-w-3xl mx-auto px-4 py-2.5 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+            
+            <div class="flex items-center justify-between w-full sm:w-auto">
+                <div class="flex items-center space-x-2.5 cursor-pointer" onclick="switchView('portal')">
+                    <img src="logo.jpg" onerror="this.src='271209529_3244963695727261_483985416568424838_n.jpg'" alt="Logo Quadrangular Pampulha" class="w-9 h-9 rounded-xl object-cover shadow-sm border border-slate-100">
+                    <div>
+                        <h1 class="font-bold text-sm text-slate-900 leading-tight">Quadrangular Pampulha</h1>
+                        <p class="text-[10px] sm:text-[11px] text-slate-500 font-medium">3ª IEQ Agudos - SP</p>
+                    </div>
                 </div>
             </div>
             
-            <!-- Botões das Abas no Topo -->
-            <div class="flex items-center space-x-1.5 flex-wrap">
-                <button onclick="switchView('portal')" id="navPortal" class="px-3 py-1.5 text-xs font-bold rounded-full bg-ieq-green text-slate-950 shadow-sm transition">
+            <!-- Botões das Abas no Topo (Scrollable em dispositivos móveis) -->
+            <div class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar py-1 w-full sm:w-auto shrink-0">
+                <button onclick="switchView('portal')" id="navPortal" class="px-3 py-1.5 text-[11px] sm:text-xs font-bold rounded-full bg-ieq-green text-slate-950 shadow-sm transition whitespace-nowrap shrink-0">
                     <i class="fa-solid fa-house mr-1"></i> Início
                 </button>
-                <button onclick="switchView('visitante')" id="navVisitante" class="px-3 py-1.5 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition">
+                <button onclick="switchView('visitante')" id="navVisitante" class="px-3 py-1.5 text-[11px] sm:text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap shrink-0">
                     <i class="fa-solid fa-heart mr-1 text-ieq-green"></i> Visitante
                 </button>
-                <button onclick="switchView('testemunho')" id="navTestemunho" class="px-3 py-1.5 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition">
+                <button onclick="switchView('testemunho')" id="navTestemunho" class="px-3 py-1.5 text-[11px] sm:text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap shrink-0">
                     <i class="fa-solid fa-hands-clapping mr-1 text-amber-500"></i> Testemunhos
                 </button>
-                <button onclick="checkAdminAccess()" id="navAdmin" class="px-3 py-1.5 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition">
+                <button onclick="checkAdminAccess()" id="navAdmin" class="px-3 py-1.5 text-[11px] sm:text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap shrink-0">
                     <i class="fa-solid fa-lock mr-1"></i> Admin
                 </button>
             </div>
@@ -192,19 +198,19 @@
         <div id="viewPortal" class="space-y-5">
             
             <!-- Box Principal na Tela Inicial -->
-            <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm text-center relative overflow-hidden">
+            <div class="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-sm text-center relative overflow-hidden">
                 <div class="inline-flex items-center gap-1.5 bg-ieq-green/15 text-ieq-darkGreen text-xs px-3 py-1 rounded-full font-bold mb-3">
                     <i class="fa-solid fa-church text-ieq-green"></i> Pastor José Jaime
                 </div>
-                <h2 class="text-2xl font-extrabold text-slate-900 mb-2">Que alegria ter você aqui! 🙏</h2>
-                <p class="text-slate-600 text-sm max-w-md mx-auto mb-5 leading-relaxed">
+                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 mb-2">Que alegria ter você aqui! 🙏</h2>
+                <p class="text-slate-600 text-xs sm:text-sm max-w-md mx-auto mb-5 leading-relaxed">
                     Seja muito bem-vindo à <strong>Quadrangular Pampulha</strong>. Escaneou o QR Code da cadeira? Queremos te conhecer e orar por você!
                 </p>
                 <div class="flex justify-center gap-2.5 flex-wrap">
-                    <button onclick="switchView('visitante')" class="bg-ieq-green hover:bg-ieq-greenHover text-slate-950 text-xs font-bold px-5 py-2.5 rounded-2xl shadow-sm transition flex items-center">
+                    <button onclick="switchView('visitante')" class="bg-ieq-green hover:bg-ieq-greenHover text-slate-950 text-xs font-bold px-4 py-2.5 rounded-2xl shadow-sm transition flex items-center">
                         <i class="fa-solid fa-user-plus mr-1.5"></i> Sou Visitante / Quero me Conectar
                     </button>
-                    <a href="#secao-pix" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-5 py-2.5 rounded-2xl shadow-sm transition flex items-center">
+                    <a href="#secao-pix" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-2xl shadow-sm transition flex items-center">
                         <i class="fa-solid fa-hand-holding-dollar mr-1.5 text-ieq-green"></i> Dízimos & Ofertas
                     </a>
                 </div>
@@ -218,7 +224,7 @@
                     </span>
                     <span class="text-[10px] bg-white/10 px-2.5 py-0.5 rounded-full text-slate-200">Palavra Viva</span>
                 </div>
-                <p class="text-sm italic text-emerald-100 font-medium leading-relaxed pt-1">
+                <p class="text-xs sm:text-sm italic text-emerald-100 font-medium leading-relaxed pt-1">
                     "Porque sou eu que conheço os planos que tenho para vocês", diz o Senhor, "planos de fazê-los prosperar e não de causar dano, planos de dar a vocês esperança e um futuro."
                 </p>
                 <p class="text-xs font-bold text-right text-ieq-green">— Jeremias 29:11</p>
@@ -226,17 +232,17 @@
 
             <!-- CARD DE EVENTO EM DESTAQUE -->
             <div id="cardDestaqueContainer" class="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
-                <div class="relative h-48 sm:h-56 w-full bg-slate-100">
+                <div class="relative h-44 sm:h-56 w-full bg-slate-100">
                     <img id="destaqueImagem" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1000&q=80" alt="Evento em Destaque" class="w-full h-full object-cover">
                     <div class="absolute top-3 left-3 bg-ieq-orange text-white text-[11px] font-extrabold px-3 py-1 rounded-full shadow-md uppercase tracking-wider flex items-center gap-1">
                         <i class="fa-solid fa-star"></i> Próximo Evento
                     </div>
                 </div>
-                <div class="p-5 space-y-2">
-                    <h3 id="destaqueTitulo" class="font-extrabold text-slate-900 text-lg sm:text-xl">Grande Culto de Ação de Graças</h3>
+                <div class="p-4 sm:p-5 space-y-2">
+                    <h3 id="destaqueTitulo" class="font-extrabold text-slate-900 text-base sm:text-xl">Grande Culto de Ação de Graças</h3>
                     <p id="destaqueDesc" class="text-xs sm:text-sm text-slate-600 leading-relaxed">Um momento especial de gratidão, louvor e comunhão com toda a nossa igreja e famílias convidadas.</p>
                     
-                    <div class="pt-2 flex flex-wrap items-center gap-3 text-xs font-semibold text-slate-700 border-t border-slate-100">
+                    <div class="pt-2 flex flex-wrap items-center gap-2.5 text-xs font-semibold text-slate-700 border-t border-slate-100">
                         <div class="flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-xl">
                             <i class="fa-regular fa-calendar text-ieq-green"></i>
                             <span id="destaqueDataHora">Domingo às 18h30</span>
@@ -250,7 +256,7 @@
             </div>
 
             <!-- AGENDA DE EVENTOS DO MÊS (DINÂMICA VIA FIREBASE) -->
-            <div class="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-sm space-y-3">
+            <div class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/80 shadow-sm space-y-3">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                     <div class="flex items-center space-x-2">
                         <div class="w-8 h-8 rounded-lg bg-ieq-orange/20 text-ieq-orange flex items-center justify-center font-bold text-sm">
@@ -269,34 +275,34 @@
             </div>
 
             <!-- Redes Sociais Oficiais -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <a href="https://www.instagram.com/quadrangularpampulha/" target="_blank" class="bg-white hover:bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-sm text-center transition flex flex-col items-center group">
-                    <div class="w-10 h-10 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center mb-2 group-hover:scale-110 transition">
-                        <i class="fa-brands fa-instagram text-xl"></i>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+                <a href="https://www.instagram.com/quadrangularpampulha/" target="_blank" class="bg-white hover:bg-slate-50 p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-sm text-center transition flex flex-col items-center group">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center mb-1.5 group-hover:scale-110 transition">
+                        <i class="fa-brands fa-instagram text-lg sm:text-xl"></i>
                     </div>
                     <span class="text-xs font-bold text-slate-800">Instagram</span>
                     <span class="text-[10px] text-slate-400">@quadrangularpampulha</span>
                 </a>
 
-                <a href="https://www.facebook.com/QuadrangularPampulhaAgudos?locale=pt_BR" target="_blank" class="bg-white hover:bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-sm text-center transition flex flex-col items-center group">
-                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-2 group-hover:scale-110 transition">
-                        <i class="fa-brands fa-facebook-f text-lg"></i>
+                <a href="https://www.facebook.com/QuadrangularPampulhaAgudos?locale=pt_BR" target="_blank" class="bg-white hover:bg-slate-50 p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-sm text-center transition flex flex-col items-center group">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-1.5 group-hover:scale-110 transition">
+                        <i class="fa-brands fa-facebook-f text-base sm:text-lg"></i>
                     </div>
                     <span class="text-xs font-bold text-slate-800">Facebook</span>
                     <span class="text-[10px] text-slate-400">Página Oficial</span>
                 </a>
 
-                <a href="https://www.youtube.com/@QuadrangularPampulhaAgudosSP" target="_blank" class="bg-white hover:bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-sm text-center transition flex flex-col items-center group">
-                    <div class="w-10 h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center mb-2 group-hover:scale-110 transition">
-                        <i class="fa-brands fa-youtube text-lg"></i>
+                <a href="https://www.youtube.com/@QuadrangularPampulhaAgudosSP" target="_blank" class="bg-white hover:bg-slate-50 p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-sm text-center transition flex flex-col items-center group">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center mb-1.5 group-hover:scale-110 transition">
+                        <i class="fa-brands fa-youtube text-base sm:text-lg"></i>
                     </div>
                     <span class="text-xs font-bold text-slate-800">YouTube</span>
                     <span class="text-[10px] text-slate-400">Cultos Ao Vivo</span>
                 </a>
 
-                <a href="https://maps.google.com/?q=Av.+Antônio+Maria+dos+Santos+Escada,+87+-+Parque+Pampulha+Agudos" target="_blank" class="bg-white hover:bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-sm text-center transition flex flex-col items-center group">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-2 group-hover:scale-110 transition">
-                        <i class="fa-solid fa-location-dot text-lg"></i>
+                <a href="https://maps.google.com/?q=Av.+Antônio+Maria+dos+Santos+Escada,+87+-+Parque+Pampulha+Agudos" target="_blank" class="bg-white hover:bg-slate-50 p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-sm text-center transition flex flex-col items-center group">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-1.5 group-hover:scale-110 transition">
+                        <i class="fa-solid fa-location-dot text-base sm:text-lg"></i>
                     </div>
                     <span class="text-xs font-bold text-slate-800">Localização</span>
                     <span class="text-[10px] text-slate-400">Como Chegar</span>
@@ -304,7 +310,7 @@
             </div>
 
             <!-- Programação Semanal -->
-            <div class="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-sm space-y-3">
+            <div class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/80 shadow-sm space-y-3">
                 <div class="flex items-center space-x-2 border-b border-slate-100 pb-3">
                     <div class="w-8 h-8 rounded-lg bg-ieq-green/20 text-ieq-darkGreen flex items-center justify-center font-bold text-sm">
                         <i class="fa-regular fa-calendar-days"></i>
@@ -450,18 +456,18 @@
         <!-- ================= ABA 2: DEDICADA EXCLUSIVAMENTE AO VISITANTE ================= -->
         <div id="viewVisitante" class="space-y-5 hidden">
             
-            <div class="bg-gradient-to-br from-emerald-900 to-slate-900 text-white p-6 sm:p-8 rounded-3xl shadow-md space-y-4 relative overflow-hidden">
+            <div class="bg-gradient-to-br from-emerald-900 to-slate-900 text-white p-5 sm:p-8 rounded-3xl shadow-md space-y-4 relative overflow-hidden">
                 <div class="absolute -right-6 -bottom-6 w-36 h-36 bg-ieq-green/10 rounded-full blur-2xl"></div>
                 
                 <div class="inline-flex items-center gap-2 bg-ieq-green/20 text-ieq-green px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
                     <i class="fa-solid fa-heart"></i> Boas-Vindas!
                 </div>
 
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-white leading-snug">
+                <h2 class="text-xl sm:text-3xl font-extrabold text-white leading-snug">
                     A sua presença é extremamente importante para nós!
                 </h2>
 
-                <blockquote class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/15 italic text-xs sm:text-sm text-emerald-100 leading-relaxed">
+                <blockquote class="bg-white/10 backdrop-blur-md p-3.5 sm:p-4 rounded-2xl border border-white/15 italic text-xs sm:text-sm text-emerald-100 leading-relaxed">
                     "Alegrei-me com os que me disseram: 'Vamos à casa do Senhor!'"
                     <span class="block mt-2 font-bold text-right text-ieq-green not-italic">— Salmos 122:1</span>
                 </blockquote>
@@ -470,7 +476,7 @@
                     Estamos muito felizes por ter você aqui no nosso culto hoje. Queremos te conhecer melhor e caminhar junto com você e sua família!
                 </p>
 
-                <div class="bg-white/10 p-4 rounded-2xl border border-white/10 text-xs sm:text-sm text-emerald-100 space-y-1.5">
+                <div class="bg-white/10 p-3.5 sm:p-4 rounded-2xl border border-white/10 text-xs sm:text-sm text-emerald-100 space-y-1.5">
                     <p class="font-bold text-white flex items-center gap-2">
                         <i class="fa-solid fa-comments text-ieq-green text-base"></i> Sinta-se completamente em casa!
                     </p>
@@ -483,7 +489,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-5">
+            <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-sm space-y-5">
                 <div class="border-b border-slate-100 pb-3">
                     <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
                         <i class="fa-solid fa-pen-to-square text-ieq-green"></i> Registro de Presença & Pedido de Oração
@@ -533,7 +539,7 @@
                     </div>
 
                     <div class="bg-emerald-50/60 p-3.5 rounded-2xl border border-emerald-100 flex items-start space-x-3">
-                        <input type="checkbox" id="visQueroGrupo" class="mt-1 w-4 h-4 text-ieq-green rounded accent-ieq-green cursor-pointer" checked>
+                        <input type="checkbox" id="visQueroGrupo" class="mt-1 w-4 h-4 text-ieq-green rounded accent-ieq-green cursor-pointer shrink-0" checked>
                         <label for="visQueroGrupo" class="text-xs text-slate-700 leading-relaxed cursor-pointer">
                             <strong>Desejo ser adicionado(a) ao Grupo de Avisos do WhatsApp</strong> da igreja para receber recados e programação dos cultos.
                         </label>
@@ -554,17 +560,17 @@
 
         <!-- ================= ABA DE TESTEMUNHOS & VITÓRIAS ================= -->
         <div id="viewTestemunho" class="space-y-5 hidden">
-            <div class="bg-amber-500 text-slate-950 p-6 rounded-3xl shadow-sm text-center space-y-2">
+            <div class="bg-amber-500 text-slate-950 p-5 sm:p-6 rounded-3xl shadow-sm text-center space-y-2">
                 <div class="w-12 h-12 bg-slate-950/10 text-slate-950 rounded-2xl flex items-center justify-center mx-auto text-xl font-bold">
                     <i class="fa-solid fa-hands-clapping"></i>
                 </div>
-                <h2 class="text-2xl font-extrabold">Conta o que Deus fez! 🙌</h2>
+                <h2 class="text-xl sm:text-2xl font-extrabold">Conta o que Deus fez! 🙌</h2>
                 <p class="text-xs sm:text-sm text-slate-900 max-w-md mx-auto leading-relaxed font-medium">
                     "Contem a sua glória entre as nações, os seus maravilhosos feitos entre todos os povos." (Salmo 96:3)
                 </p>
             </div>
 
-            <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-4">
+            <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-sm space-y-4">
                 <div class="border-b border-slate-100 pb-3">
                     <h3 class="font-bold text-slate-900 text-base">Envie o seu Testemunho ou Benção</h3>
                     <p class="text-xs text-slate-500">Compartilhe conosco a sua vitória para glorificarmos a Deus juntos!</p>
@@ -590,15 +596,15 @@
                         <label class="block text-xs font-bold text-slate-800">Deseja compartilhar no culto?</label>
                         <div class="space-y-2">
                             <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
-                                <input type="radio" name="testContar" value="Quero ir lá na frente contar no culto!" class="accent-amber-600">
+                                <input type="radio" name="testContar" value="Quero ir lá na frente contar no culto!" class="accent-amber-600 shrink-0">
                                 <span class="font-bold text-amber-900">Sim! Quero ir lá na frente contar o testemunho para a igreja! 🎤</span>
                             </label>
                             <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
-                                <input type="radio" name="testContar" value="Pode ler no culto (sem meu nome se preferir)" class="accent-amber-600">
+                                <input type="radio" name="testContar" value="Pode ler no culto (sem meu nome se preferir)" class="accent-amber-600 shrink-0">
                                 <span>Pode apenas ler ou mencionar o testemunho no culto.</span>
                             </label>
                             <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
-                                <input type="radio" name="testContar" value="Apenas para o Pastor saber" class="accent-amber-600" checked>
+                                <input type="radio" name="testContar" value="Apenas para o Pastor saber" class="accent-amber-600 shrink-0" checked>
                                 <span>Apenas para o Pastor e a liderança saberem (Sigiloso).</span>
                             </label>
                         </div>
@@ -626,12 +632,12 @@
                 </button>
             </div>
 
-            <!-- Abas do Admin -->
-            <div class="flex space-x-2 border-b border-slate-200 pb-2 flex-wrap gap-y-1">
-                <button onclick="switchAdminTab('visitantes')" id="tabVisBtn" class="px-3.5 py-2 text-xs font-bold rounded-xl bg-ieq-green text-slate-950 transition">Cadastros</button>
-                <button onclick="switchAdminTab('testemunhos')" id="tabTestBtn" class="px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Testemunhos</button>
-                <button onclick="switchAdminTab('agenda')" id="tabAgendaBtn" class="px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Agenda do Mês</button>
-                <button onclick="switchAdminTab('destaque')" id="tabDestBtn" class="px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Evento Destaque</button>
+            <!-- Abas do Admin com Scroll Suave em Mobile -->
+            <div class="flex space-x-2 border-b border-slate-200 pb-2 overflow-x-auto no-scrollbar shrink-0">
+                <button onclick="switchAdminTab('visitantes')" id="tabVisBtn" class="px-3.5 py-2 text-xs font-bold rounded-xl bg-ieq-green text-slate-950 transition whitespace-nowrap shrink-0">Cadastros</button>
+                <button onclick="switchAdminTab('testemunhos')" id="tabTestBtn" class="px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap shrink-0">Testemunhos</button>
+                <button onclick="switchAdminTab('agenda')" id="tabAgendaBtn" class="px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap shrink-0">Agenda do Mês</button>
+                <button onclick="switchAdminTab('destaque')" id="tabDestBtn" class="px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap shrink-0">Evento Destaque</button>
             </div>
 
             <!-- Conteúdo Admin 1: Cadastros -->
@@ -651,7 +657,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm space-y-3">
+                <div class="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/80 shadow-sm space-y-3">
                     <h3 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2">
                         Lista de Pessoas Cadastradas (Cadeiras)
                     </h3>
@@ -662,7 +668,7 @@
             </div>
 
             <!-- Conteúdo Admin 2: Testemunhos Recebidos -->
-            <div id="adminTabTestemunhos" class="space-y-4 hidden bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm">
+            <div id="adminTabTestemunhos" class="space-y-4 hidden bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/80 shadow-sm">
                 <div class="border-b border-slate-100 pb-2">
                     <h3 class="font-bold text-sm text-slate-900">Testemunhos e Bençãos Recebidas</h3>
                     <p class="text-xs text-slate-400">Veja quem compartilhou vitórias e se querem contar no culto.</p>
@@ -674,7 +680,7 @@
             </div>
 
             <!-- Conteúdo Admin 3: GERENCIAR AGENDA DO MÊS -->
-            <div id="adminTabAgenda" class="space-y-4 hidden bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm">
+            <div id="adminTabAgenda" class="space-y-4 hidden bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/80 shadow-sm">
                 <div class="border-b border-slate-100 pb-2">
                     <h3 class="font-bold text-sm text-slate-900">Gerenciar Agenda do Mês</h3>
                     <p class="text-xs text-slate-400">Adicione ou remova os eventos especiais que aparecem no calendário da página inicial.</p>
@@ -695,11 +701,11 @@
                         <div class="col-span-2 sm:col-span-1">
                             <label class="block text-[11px] font-bold text-slate-700 mb-1">Cor do Marcador</label>
                             <select id="agendaCor" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800">
-                                <option value="bg-amber-500">Laranja / Dourado</option>
+                                <option value="bg-amber-500 text-white">Laranja / Dourado</option>
                                 <option value="bg-ieq-green text-slate-950">Verde IEQ</option>
-                                <option value="bg-purple-600">Roxo</option>
-                                <option value="bg-blue-600">Azul</option>
-                                <option value="bg-red-600">Vermelho</option>
+                                <option value="bg-purple-600 text-white">Roxo</option>
+                                <option value="bg-blue-600 text-white">Azul</option>
+                                <option value="bg-red-600 text-white">Vermelho</option>
                             </select>
                         </div>
                     </div>
@@ -728,7 +734,7 @@
             </div>
 
             <!-- Conteúdo Admin 4: Gerenciar Destaque & Culto Ao Vivo -->
-            <div id="adminTabDestaque" class="space-y-4 hidden bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm">
+            <div id="adminTabDestaque" class="space-y-4 hidden bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/80 shadow-sm">
                 <div class="border-b border-slate-100 pb-2">
                     <h3 class="font-bold text-sm text-slate-900">Editar Transmissão Ao Vivo & Evento em Destaque</h3>
                     <p class="text-xs text-slate-400">Ative as lives e cole o link direto das transmissões no YouTube e Facebook.</p>
@@ -737,9 +743,9 @@
                 <form onsubmit="salvarDestaqueFirebase(event)" class="space-y-3.5">
                     
                     <!-- OPÇÃO CULTO AO VIVO COM LINKS DIRETO -->
-                    <div class="bg-red-50 p-4 rounded-2xl border border-red-200 space-y-3">
+                    <div class="bg-red-50 p-3.5 sm:p-4 rounded-2xl border border-red-200 space-y-3">
                         <div class="flex items-center space-x-3">
-                            <input type="checkbox" id="admAoVivoCheck" class="w-5 h-5 text-red-600 rounded accent-red-600 cursor-pointer">
+                            <input type="checkbox" id="admAoVivoCheck" class="w-5 h-5 text-red-600 rounded accent-red-600 cursor-pointer shrink-0">
                             <label for="admAoVivoCheck" class="text-xs font-bold text-red-900 cursor-pointer">
                                 🔴 ESTAMOS AO VIVO AGORA (Exibir faixa vermelha no topo)
                             </label>
@@ -764,7 +770,7 @@
 
                     <!-- OPÇÃO DE DEIXAR SEM EVENTO / EXIBIR BANNER -->
                     <div class="bg-amber-50 p-3.5 rounded-2xl border border-amber-200 flex items-center space-x-3">
-                        <input type="checkbox" id="admDestAtivo" class="w-5 h-5 text-ieq-green rounded accent-ieq-green cursor-pointer" checked>
+                        <input type="checkbox" id="admDestAtivo" class="w-5 h-5 text-ieq-green rounded accent-ieq-green cursor-pointer shrink-0" checked>
                         <label for="admDestAtivo" class="text-xs font-bold text-slate-800 cursor-pointer">
                             Exibir Evento em Destaque na página inicial
                             <span class="block text-[11px] font-normal text-slate-500">Desmarque esta opção para deixar o site **Sem Evento** em destaque.</span>
@@ -861,25 +867,27 @@
             document.getElementById('viewTestemunho').classList.add('hidden');
             document.getElementById('viewAdmin').classList.add('hidden');
 
-            document.getElementById('navPortal').className = "px-3 py-1.5 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
-            document.getElementById('navVisitante').className = "px-3 py-1.5 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
-            document.getElementById('navTestemunho').className = "px-3 py-1.5 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
-            document.getElementById('navAdmin').className = "px-3 py-1.5 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
+            const inactiveClass = "px-3 py-1.5 text-[11px] sm:text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap shrink-0";
+
+            document.getElementById('navPortal').className = inactiveClass;
+            document.getElementById('navVisitante').className = inactiveClass;
+            document.getElementById('navTestemunho').className = inactiveClass;
+            document.getElementById('navAdmin').className = inactiveClass;
 
             if (view === 'portal') {
                 document.getElementById('viewPortal').classList.remove('hidden');
-                document.getElementById('navPortal').className = "px-3 py-1.5 text-xs font-bold rounded-full bg-ieq-green text-slate-950 shadow-sm transition";
+                document.getElementById('navPortal').className = "px-3 py-1.5 text-[11px] sm:text-xs font-bold rounded-full bg-ieq-green text-slate-950 shadow-sm transition whitespace-nowrap shrink-0";
             } else if (view === 'visitante') {
                 document.getElementById('viewVisitante').classList.remove('hidden');
-                document.getElementById('navVisitante').className = "px-3 py-1.5 text-xs font-bold rounded-full bg-ieq-green text-slate-950 shadow-sm transition";
+                document.getElementById('navVisitante').className = "px-3 py-1.5 text-[11px] sm:text-xs font-bold rounded-full bg-ieq-green text-slate-950 shadow-sm transition whitespace-nowrap shrink-0";
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } else if (view === 'testemunho') {
                 document.getElementById('viewTestemunho').classList.remove('hidden');
-                document.getElementById('navTestemunho').className = "px-3 py-1.5 text-xs font-bold rounded-full bg-amber-500 text-slate-950 shadow-sm transition";
+                document.getElementById('navTestemunho').className = "px-3 py-1.5 text-[11px] sm:text-xs font-bold rounded-full bg-amber-500 text-slate-950 shadow-sm transition whitespace-nowrap shrink-0";
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } else if (view === 'admin') {
                 document.getElementById('viewAdmin').classList.remove('hidden');
-                document.getElementById('navAdmin').className = "px-3 py-1.5 text-xs font-bold rounded-full bg-ieq-green text-slate-950 shadow-sm transition";
+                document.getElementById('navAdmin').className = "px-3 py-1.5 text-[11px] sm:text-xs font-bold rounded-full bg-ieq-green text-slate-950 shadow-sm transition whitespace-nowrap shrink-0";
             }
         }
 
@@ -902,23 +910,25 @@
             document.getElementById('adminTabAgenda').classList.add('hidden');
             document.getElementById('adminTabDestaque').classList.add('hidden');
 
-            document.getElementById('tabVisBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
-            document.getElementById('tabTestBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
-            document.getElementById('tabAgendaBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
-            document.getElementById('tabDestBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
+            const inactiveBtn = "px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap shrink-0";
+
+            document.getElementById('tabVisBtn').className = inactiveBtn;
+            document.getElementById('tabTestBtn').className = inactiveBtn;
+            document.getElementById('tabAgendaBtn').className = inactiveBtn;
+            document.getElementById('tabDestBtn').className = inactiveBtn;
 
             if (tab === 'visitantes') {
                 document.getElementById('adminTabVisitantes').classList.remove('hidden');
-                document.getElementById('tabVisBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-ieq-green text-slate-950 transition";
+                document.getElementById('tabVisBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-ieq-green text-slate-950 transition whitespace-nowrap shrink-0";
             } else if (tab === 'testemunhos') {
                 document.getElementById('adminTabTestemunhos').classList.remove('hidden');
-                document.getElementById('tabTestBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-amber-500 text-slate-950 transition";
+                document.getElementById('tabTestBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-amber-500 text-slate-950 transition whitespace-nowrap shrink-0";
             } else if (tab === 'agenda') {
                 document.getElementById('adminTabAgenda').classList.remove('hidden');
-                document.getElementById('tabAgendaBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-ieq-orange text-white transition";
+                document.getElementById('tabAgendaBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-ieq-orange text-white transition whitespace-nowrap shrink-0";
             } else if (tab === 'destaque') {
                 document.getElementById('adminTabDestaque').classList.remove('hidden');
-                document.getElementById('tabDestBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-ieq-green text-slate-950 transition";
+                document.getElementById('tabDestBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-ieq-green text-slate-950 transition whitespace-nowrap shrink-0";
             }
         }
 
