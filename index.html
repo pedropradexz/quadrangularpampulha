@@ -940,10 +940,18 @@
             }
         }
 
-        function checkAdminAccess() {
-            const senha = prompt("Digite a senha do painel da secretaria (Padrão: 1234):");
-            if (senha === "1234") { switchView('admin'); } else if (senha !== null) { alert("Senha incorreta!"); }
-        }
+        async function checkAdminAccess() {
+    const senha = prompt("Digite a senha do painel da secretaria:");
+    if (senha === null) return;
+    const dados = new TextEncoder().encode("quadrangular-pampulha:" + senha);
+    const buf = await crypto.subtle.digest("SHA-256", dados);
+    const hash = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+    if (hash === "5b3c3c63c0daf41ef103f77095ff3e13e0d22820831fe8611063006e59f99a4b") {
+        switchView('admin');
+    } else {
+        alert("Senha incorreta!");
+    }
+}
 
         function logoutAdmin() { switchView('portal'); }
 
