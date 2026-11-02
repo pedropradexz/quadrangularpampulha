@@ -59,7 +59,7 @@
         window.addDoc = addDoc;
         window.deleteDoc = deleteDoc;
 
-        // Escutar configurações ao vivo
+        // Escutar configurações e destaque ao vivo
         onSnapshot(doc(db, "configuracoes", "destaque"), (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
@@ -145,9 +145,6 @@
         .quadrangular-gradient {
             background: linear-gradient(135deg, #c53030 0%, #d69e2e 33%, #2b6cb0 66%, #6b46c1 100%);
         }
-        .quadrangular-border {
-            border-image: linear-gradient(to right, #c53030, #d69e2e, #2b6cb0, #6b46c1) 1;
-        }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -168,12 +165,12 @@
                 </div>
             </div>
             
-            <!-- Navegação por Abas Responsiva -->
+            <!-- Navegação por Abas -->
             <div class="flex items-center space-x-2 overflow-x-auto no-scrollbar py-1 w-full md:w-auto shrink-0">
                 <button onclick="switchView('portal')" id="navPortal" class="px-4 py-2 text-xs font-bold rounded-full bg-ieq-green text-slate-950 shadow-sm transition whitespace-nowrap shrink-0 flex items-center gap-1.5">
                     <i class="fa-solid fa-house"></i> Início
                 </button>
-                <button onclick="switchView('quadrangular')" id="navQuadrangular" class="px-4 py-2 text-xs font-black rounded-full quadrangular-gradient text-white shadow-md transition whitespace-nowrap shrink-0 flex items-center gap-1.5 animate-pulse">
+                <button onclick="switchView('quadrangular')" id="navQuadrangular" class="px-4 py-2 text-xs font-black rounded-full quadrangular-gradient text-white shadow-md transition whitespace-nowrap shrink-0 flex items-center gap-1.5">
                     <i class="fa-solid fa-flag"></i> Mês Quadrangular 🟥🟨🟦🟪
                 </button>
                 <button onclick="switchView('natal')" id="navNatal" class="px-4 py-2 text-xs font-extrabold rounded-full gold-brush text-slate-950 shadow-sm transition whitespace-nowrap shrink-0 flex items-center gap-1.5">
@@ -214,10 +211,10 @@
     <!-- Conteúdo Principal Widescreen -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
 
-        <!-- ================= ABA 1: INÍCIO / HOME DECORADA ================= -->
+        <!-- ================= ABA 1: INÍCIO / HOME ================= -->
         <div id="viewPortal" class="space-y-6">
             
-            <!-- Hero Banner Decorado do Mês Quadrangular -->
+            <!-- Hero Banner do Mês Quadrangular -->
             <div onclick="switchView('quadrangular')" class="quadrangular-gradient text-white p-6 sm:p-10 rounded-3xl shadow-xl border-4 border-white/30 flex flex-col md:flex-row justify-between items-center gap-6 cursor-pointer hover:scale-[1.01] transition duration-300 relative overflow-hidden">
                 <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="space-y-3 text-center md:text-left z-10 max-w-2xl">
@@ -234,21 +231,24 @@
                 </button>
             </div>
 
-            <!-- Grid Widescreen para Organizar o Espaço -->
+            <!-- Grid Widescreen -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
-                <!-- Coluna Principal Esquerda (2/3 da largura em telas grandes) -->
+                <!-- Coluna Esquerda -->
                 <div class="lg:col-span-2 space-y-6">
                     
-                    <!-- Box Boas-Vindas Pastor -->
+                    <!-- Boas-Vindas -->
                     <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-sm relative overflow-hidden flex flex-col justify-between">
                         <div>
                             <div class="inline-flex items-center gap-2 bg-ieq-green/15 text-ieq-darkGreen text-xs px-3.5 py-1.5 rounded-full font-bold mb-4">
                                 <i class="fa-solid fa-church text-ieq-green"></i> Pastor José Jaime • 3ª IEQ Agudos
                             </div>
                             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-3">Que alegria ter você aqui conosco! 🙏</h2>
+                            <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-4">
+                                Seja muito bem-vindo à <strong>Quadrangular Pampulha</strong>[cite: 1, 2]. Aqui você encontra um ambiente de fé, comunhão e amor fraternal. Se você é visitante e veio nos cultuar hoje, preencha nosso cadastro rápido para que possamos nos conectar e orar por sua vida e sua família.
+                            </p>
                             <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-6">
-                                Seja muito bem-vindo à <strong>Quadrangular Pampulha</strong>. Se você escaneou o QR Code da cadeira, utilize nossa aba de visitantes para se conectar e receber oração!
+                                Acompanhe nossa programação semanal, participe das células e cresça na presença do Senhor. Há sempre um lugar especial reservado para você!
                             </p>
                         </div>
                         <div class="flex flex-wrap gap-3">
@@ -261,7 +261,7 @@
                         </div>
                     </div>
 
-                    <!-- Card Natal Feliz -->
+                    <!-- Natal Feliz -->
                     <div id="secaoNatalFelizCard" class="bg-gradient-to-r from-slate-950 via-slate-900 to-amber-950 text-white p-6 sm:p-8 rounded-3xl shadow-lg border-2 border-amber-500/40 flex flex-col sm:flex-row justify-between items-center gap-6 relative overflow-hidden">
                         <div class="space-y-2 text-center sm:text-left">
                             <div class="inline-flex items-center gap-1.5 gold-brush text-slate-950 text-xs font-black px-3.5 py-1 rounded-full uppercase tracking-wider">
@@ -296,7 +296,7 @@
 
                 </div>
 
-                <!-- Coluna Lateral Direita (1/3 da largura em telas grandes) -->
+                <!-- Coluna Direita -->
                 <div class="space-y-6">
                     
                     <!-- Evento em Destaque -->
@@ -326,14 +326,14 @@
                         </div>
                     </div>
 
-                    <!-- Programação Semanal Compacta -->
+                    <!-- Programação Semanal Completa (Com Segunda e Terça restauradas) -->
                     <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-4">
                         <div class="flex items-center space-x-3 border-b border-slate-100 pb-3">
                             <div class="w-9 h-9 rounded-xl bg-ieq-green/20 text-ieq-darkGreen flex items-center justify-center font-bold text-sm">
                                 <i class="fa-regular fa-calendar-days"></i>
                             </div>
                             <div>
-                                <h3 class="font-bold text-slate-900 text-sm">Horários dos Cultos</h3>
+                                <h3 class="font-bold text-slate-900 text-sm">Programação Semanal</h3>
                                 <p class="text-[11px] text-slate-400">Venha cultuar conosco</p>
                             </div>
                         </div>
@@ -347,6 +347,54 @@
                                 <span class="font-bold text-slate-900">Domingo (Culto da Família)</span>
                                 <span class="font-extrabold bg-ieq-green/20 text-ieq-darkGreen px-2.5 py-1 rounded-full">18h30</span>
                             </div>
+                            
+                            <!-- Segunda-feira (Oração) -->
+                            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex justify-between items-center">
+                                <span class="font-bold text-slate-900">Segunda (Reunião de Oração)</span>
+                                <span class="font-extrabold bg-blue-100 text-blue-800 px-2.5 py-1 rounded-full">19h00</span>
+                            </div>
+
+                            <!-- Terça-feira (Células com expansor) -->
+                            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <span class="font-bold text-slate-900 block">Terça (Reunião de Células)</span>
+                                        <span class="text-[10px] text-slate-500">Nos lares da cidade</span>
+                                    </div>
+                                    <span class="font-extrabold bg-ieq-orange/20 text-ieq-orange px-2.5 py-1 rounded-full">20h00</span>
+                                </div>
+                                <button onclick="toggleCelulas()" class="w-full bg-ieq-orange/10 hover:bg-ieq-orange/20 text-ieq-orange text-xs font-bold py-2 rounded-xl border border-ieq-orange/30 transition flex items-center justify-center gap-1.5">
+                                    <i class="fa-solid fa-users"></i> Ver Endereço das Células <i id="iconSetaCelulas" class="fa-solid fa-chevron-down text-[10px]"></i>
+                                </button>
+                                
+                                <div id="listaCelulas" class="hidden pt-2 space-y-2 border-t border-slate-200/80">
+                                    <div class="bg-white p-2.5 rounded-xl border text-[11px] flex justify-between items-center">
+                                        <div><strong>Célula BETEL 1</strong><br><span class="text-slate-500">Rua Ovídio de Conte, 46</span></div>
+                                        <a href="https://maps.google.com/?q=Rua+Ovideo+de+Conte,+46+-+Agudos" target="_blank" class="bg-ieq-orange text-white p-1.5 rounded-lg"><i class="fa-solid fa-location-arrow"></i></a>
+                                    </div>
+                                    <div class="bg-white p-2.5 rounded-xl border text-[11px] flex justify-between items-center">
+                                        <div><strong>Célula BETEL 2</strong><br><span class="text-slate-500">Rua Wilma Venturini, 567</span></div>
+                                        <a href="https://maps.google.com/?q=Rua+Wilma+Venturini,+567+-+Agudos" target="_blank" class="bg-ieq-orange text-white p-1.5 rounded-lg"><i class="fa-solid fa-location-arrow"></i></a>
+                                    </div>
+                                    <div class="bg-white p-2.5 rounded-xl border text-[11px] flex justify-between items-center">
+                                        <div><strong>Célula PENIEL</strong><br><span class="text-slate-500">Rua Prof. Luiz Pedro, 506</span></div>
+                                        <a href="https://maps.google.com/?q=Rua+Prof+Luiz+Pedro+da+Cunha,+506+-+Agudos" target="_blank" class="bg-ieq-orange text-white p-1.5 rounded-lg"><i class="fa-solid fa-location-arrow"></i></a>
+                                    </div>
+                                    <div class="bg-white p-2.5 rounded-xl border text-[11px] flex justify-between items-center">
+                                        <div><strong>Célula UFC</strong><br><span class="text-slate-500">Rua Ruth Maria Raimundo, 40</span></div>
+                                        <a href="https://maps.google.com/?q=Rua+Ruth+Maria+Raimundo+Messias,+40+-+Agudos" target="_blank" class="bg-ieq-orange text-white p-1.5 rounded-lg"><i class="fa-solid fa-location-arrow"></i></a>
+                                    </div>
+                                    <div class="bg-white p-2.5 rounded-xl border text-[11px] flex justify-between items-center">
+                                        <div><strong>Célula EMANUEL 1</strong><br><span class="text-slate-500">Rua Frei Sebastião, 82</span></div>
+                                        <a href="https://maps.google.com/?q=Rua+Frei+Sebastiao+Elebrachp,+82+-+Agudos" target="_blank" class="bg-ieq-orange text-white p-1.5 rounded-lg"><i class="fa-solid fa-location-arrow"></i></a>
+                                    </div>
+                                    <div class="bg-white p-2.5 rounded-xl border text-[11px] flex justify-between items-center">
+                                        <div><strong>Célula EMANUEL 2</strong><br><span class="text-slate-500">Rua Armando Malakovski, 40</span></div>
+                                        <a href="https://maps.google.com/?q=Rua+Armando+Malakovski,+40+-+Agudos" target="_blank" class="bg-ieq-orange text-white p-1.5 rounded-lg"><i class="fa-solid fa-location-arrow"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex justify-between items-center">
                                 <span class="font-bold text-slate-900">Quarta (Culto da Vitória)</span>
                                 <span class="font-extrabold bg-ieq-green/20 text-ieq-darkGreen px-2.5 py-1 rounded-full">20h00</span>
@@ -362,7 +410,7 @@
 
             </div>
 
-            <!-- Redes Sociais Widescreen Grid -->
+            <!-- Redes Sociais Widescreen -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <a href="https://www.instagram.com/quadrangularpampulha/" target="_blank" class="bg-white hover:bg-slate-50 p-5 rounded-3xl border border-slate-200/80 shadow-sm text-center transition flex flex-col items-center group">
                     <div class="w-12 h-12 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center mb-2 group-hover:scale-110 transition shadow-inner">
@@ -420,10 +468,9 @@
 
         </div>
 
-        <!-- ================= ABA 2: MÊS QUADRANGULAR (TOTALMENTE DECORADA E WIDESCREEN) ================= -->
+        <!-- ================= ABA 2: MÊS QUADRANGULAR ================= -->
         <div id="viewQuadrangular" class="space-y-6 hidden">
             
-            <!-- Banner Principal Com As Cores Oficiais -->
             <div class="quadrangular-gradient text-white p-6 sm:p-12 rounded-3xl shadow-2xl border-4 border-white/30 space-y-6 relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -436,7 +483,6 @@
                     </span>
                 </div>
 
-                <!-- Título e Introdução -->
                 <div class="text-center space-y-4 relative z-10 max-w-3xl mx-auto py-2">
                     <h2 class="text-4xl sm:text-6xl font-black drop-shadow-lg tracking-tight">Mês Quadrangular</h2>
                     <p class="text-sm sm:text-base text-white/95 leading-relaxed">
@@ -444,90 +490,71 @@
                     </p>
                 </div>
 
-                <!-- VÍDEO OFICIAL DE APRESENTAÇÃO DO MÊS QUADRANGULAR -->
-               <div class="bg-black/40 backdrop-blur-md p-3 sm:p-5 rounded-3xl border-2 border-white/20 shadow-2xl relative z-10 max-w-4xl mx-auto space-y-3">
-    <div class="flex items-center justify-between px-2">
-        <span class="text-xs font-bold text-amber-300 uppercase tracking-widest flex items-center gap-1.5">
-            <i class="fa-solid fa-video"></i> Vídeo Oficial • Mês Quadrangular
-        </span>
-        <span class="text-[10px] bg-white/20 text-white px-3 py-0.5 rounded-full">Apresentação Nacional</span>
-    </div>
-    
-    <div class="relative w-full rounded-2xl overflow-hidden shadow-2xl bg-slate-950 aspect-video flex items-center justify-center">
-        <iframe class="w-full h-full object-cover" src="https://www.youtube.com/embed/zU5YgPfMFbw" title="Mês Quadrangular Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    </div>
-</div>
+                <!-- VÍDEO DO MÊS QUADRANGULAR (YouTube com o link correto) -->
+                <div class="bg-black/40 backdrop-blur-md p-3 sm:p-5 rounded-3xl border-2 border-white/20 shadow-2xl relative z-10 max-w-4xl mx-auto space-y-3">
+                    <div class="flex items-center justify-between px-2">
+                        <span class="text-xs font-bold text-amber-300 uppercase tracking-widest flex items-center gap-1.5">
+                            <i class="fa-solid fa-video"></i> Vídeo Oficial • Mês Quadrangular
+                        </span>
+                        <span class="text-[10px] bg-white/20 text-white px-3 py-0.5 rounded-full">Apresentação Nacional</span>
+                    </div>
+                    
+                    <div class="relative w-full rounded-2xl overflow-hidden shadow-2xl bg-slate-950 aspect-video flex items-center justify-center">
+                        <iframe class="w-full h-full object-cover" src="https://www.youtube.com/embed/zU5YgPfMFbw" title="Mês Quadrangular Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
 
-                <!-- Os 4 Pilares da Doutrina (Widescreen Grid 4 Colunas) -->
+                <!-- 4 Pilares -->
                 <div class="space-y-4 relative z-10 pt-4">
                     <h3 class="font-extrabold text-white text-base sm:text-lg uppercase tracking-wider text-center flex items-center justify-center gap-2">
                         <i class="fa-solid fa-star text-amber-300"></i> O Evangelho Completo de Jesus Cristo[cite: 14]
                     </h3>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs sm:text-sm">
-                        
-                        <!-- 1. Jesus Salva -->
                         <div class="bg-red-950/80 p-5 rounded-3xl border-2 border-red-500/50 space-y-2 shadow-xl flex flex-col justify-between">
                             <div class="space-y-2">
                                 <div class="w-10 h-10 rounded-2xl bg-red-600 text-white flex items-center justify-center text-base shadow-md">✝️</div>
                                 <h4 class="text-red-300 font-black text-base">Jesus Salva</h4>
-                                <p class="text-slate-200 text-xs leading-relaxed">
-                                    Representado pela cor vermelha do sangue vertido na cruz[cite: 14]. É o fundamento da nossa redenção.
-                                </p>
+                                <p class="text-slate-200 text-xs leading-relaxed">Representado pela cor vermelha do sangue vertido na cruz[cite: 14]. É o fundamento da nossa redenção.</p>
                             </div>
                             <span class="text-[10px] text-red-300 font-bold uppercase tracking-wider pt-2 border-t border-red-500/30">1º Pilar</span>
                         </div>
 
-                        <!-- 2. Jesus Batiza -->
                         <div class="bg-amber-950/80 p-5 rounded-3xl border-2 border-amber-500/50 space-y-2 shadow-xl flex flex-col justify-between">
                             <div class="space-y-2">
                                 <div class="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center text-base shadow-md">🕊️</div>
                                 <h4 class="text-amber-300 font-black text-base">Jesus Batiza</h4>
-                                <p class="text-slate-200 text-xs leading-relaxed">
-                                    Representado pelo amarelo do fogo e do poder do Espírito Santo[cite: 14] para testemunhar com ousadia.
-                                </p>
+                                <p class="text-slate-200 text-xs leading-relaxed">Representado pelo amarelo do fogo e do poder do Espírito Santo[cite: 14] para testemunhar.</p>
                             </div>
                             <span class="text-[10px] text-amber-300 font-bold uppercase tracking-wider pt-2 border-t border-amber-500/30">2º Pilar</span>
                         </div>
 
-                        <!-- 3. Jesus Cura -->
                         <div class="bg-blue-950/80 p-5 rounded-3xl border-2 border-blue-500/50 space-y-2 shadow-xl flex flex-col justify-between">
                             <div class="space-y-2">
                                 <div class="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-base shadow-md">🏆</div>
                                 <h4 class="text-blue-300 font-black text-base">Jesus Cura</h4>
-                                <p class="text-slate-200 text-xs leading-relaxed">
-                                    Representado pelo azul das águas e da cura divina[cite: 14] para o corpo, alma e espírito.
-                                </p>
+                                <p class="text-slate-200 text-xs leading-relaxed">Representado pelo azul das águas e da cura divina[cite: 14] para o corpo, alma e espírito.</p>
                             </div>
                             <span class="text-[10px] text-blue-300 font-bold uppercase tracking-wider pt-2 border-t border-blue-500/30">3º Pilar</span>
                         </div>
 
-                        <!-- 4. Jesus Voltará -->
                         <div class="bg-purple-950/80 p-5 rounded-3xl border-2 border-purple-500/50 space-y-2 shadow-xl flex flex-col justify-between">
                             <div class="space-y-2">
                                 <div class="w-10 h-10 rounded-2xl bg-purple-600 text-white flex items-center justify-center text-base shadow-md">👑</div>
                                 <h4 class="text-purple-300 font-black text-base">Jesus Voltará</h4>
-                                <p class="text-slate-200 text-xs leading-relaxed">
-                                    Representado pela cor real (roxo)[cite: 14], simbolizando a bendita esperança do retorno do nosso Rei.
-                                </p>
+                                <p class="text-slate-200 text-xs leading-relaxed">Representado pela cor real (roxo)[cite: 14], simbolizando a bendita esperança do retorno do Rei.</p>
                             </div>
                             <span class="text-[10px] text-purple-300 font-bold uppercase tracking-wider pt-2 border-t border-purple-500/30">4º Pilar</span>
                         </div>
-
                     </div>
                 </div>
 
-                <!-- Conceito Oficial Extraído do Drive -->
                 <div class="bg-black/40 backdrop-blur-md p-6 sm:p-8 rounded-3xl border-2 border-white/20 space-y-3 relative z-10 text-xs sm:text-sm text-slate-100 leading-relaxed max-w-4xl mx-auto">
                     <h3 class="font-black text-amber-300 text-base sm:text-lg uppercase tracking-wider flex items-center gap-2">
                         <i class="fa-solid fa-church text-ieq-green"></i> Nossa Identidade e Missão em Novembro
                     </h3>
-                    <p>
-                        As formas geométricas expressam dinamismo e propósito, revelando uma igreja viva, sólida e em movimento[cite: 14]. A tipografia com traços limpos e diretos reforça a clareza e a força da mensagem[cite: 14].
-                    </p>
-                    <p class="italic text-amber-200 font-medium">
-                        "Que este mês nos inspire a viver o evangelho completo de Jesus Cristo: o Salvador, o Batizador com o Espírito Santo, o Médico dos médicos e o Rei que voltará."[cite: 14]
-                    </p>
+                    <p>As formas geométricas expressam dinamismo e propósito, revelando uma igreja viva, sólida e em movimento[cite: 14]. A tipografia com traços limpos reforça a clareza e a força da mensagem[cite: 14].</p>
+                    <p class="italic text-amber-200 font-medium">"Que este mês nos inspire a viver o evangelho completo de Jesus Cristo: o Salvador, o Batizador com o Espírito Santo, o Médico dos médicos e o Rei que voltará."[cite: 14]</p>
                 </div>
 
                 <div class="pt-2 text-center relative z-10">
@@ -541,7 +568,6 @@
 
         <!-- ================= ABA 3: 5º NATAL FELIZ ================= -->
         <div id="viewNatal" class="space-y-6 hidden">
-            
             <div class="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white p-6 sm:p-10 rounded-3xl shadow-xl border-2 border-amber-500/40 space-y-6 relative overflow-hidden max-w-4xl mx-auto">
                 <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -567,25 +593,13 @@
                     <h3 class="font-black text-amber-300 text-base flex items-center gap-2">
                         <i class="fa-solid fa-heart text-red-500"></i> A Nossa História & Missão
                     </h3>
-                    <p>
-                        Há 5 anos o projeto <strong>Natal Feliz</strong> nasceu do coração da <strong>Quadrangular Pampulha (3ª IEQ Agudos)</strong> com o objetivo de levar o amor de Deus e um presente para as crianças.
-                    </p>
-                </div>
-
-                <div class="bg-gradient-to-r from-amber-500/20 to-yellow-500/10 p-6 rounded-3xl border border-amber-500/40 space-y-3 relative z-10">
-                    <h3 class="font-black text-yellow-300 text-sm sm:text-base uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-sparkles"></i> O que teremos de novo este ano?
-                    </h3>
-                    <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">
-                        Nesta 5ª edição, <strong>as crianças virão até a nossa igreja</strong> para uma grande festa inesquecível com pula-pula, algodão doce, pipoca e entrega de brinquedos!
-                    </p>
+                    <p>Há 5 anos o projeto <strong>Natal Feliz</strong> nasceu do coração da <strong>Quadrangular Pampulha (3ª IEQ Agudos)</strong> com o objetivo de levar o amor de Deus e um presente para as crianças.</p>
                 </div>
 
                 <div class="bg-slate-900/90 backdrop-blur-md p-6 rounded-3xl border border-amber-500/40 space-y-4 shadow-inner relative z-10">
                     <h3 class="font-black text-center text-sm sm:text-base text-yellow-400 uppercase tracking-widest">
                         COMO VOCÊ PODE AJUDAR 🎁
                     </h3>
-                    
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
                         <div class="bg-white/5 p-4 rounded-2xl border border-amber-500/20 space-y-1">
                             <p class="font-bold text-amber-300">1. Doação de Brinquedos</p>
@@ -596,7 +610,6 @@
                             <p class="text-slate-300 text-xs">Transfira pelo PIX e escreva na observação: <strong class="text-white">"Natal Feliz"</strong>.</p>
                         </div>
                     </div>
-
                     <div class="text-center pt-2">
                         <button onclick="copiarPixNatal()" class="gold-brush hover:opacity-90 text-slate-950 font-black px-8 py-3.5 rounded-2xl text-xs sm:text-sm transition shadow-lg inline-flex items-center gap-2">
                             <i class="fa-regular fa-copy"></i> Copiar Chave PIX (E-mail da Igreja)
@@ -604,93 +617,55 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
         <!-- ================= ABA 4: VISITANTES ================= -->
         <div id="viewVisitante" class="space-y-6 hidden max-w-4xl mx-auto">
-            
-            <div class="bg-gradient-to-br from-emerald-900 to-slate-900 text-white p-6 sm:p-8 rounded-3xl shadow-md space-y-4 relative overflow-hidden">
+            <div class="bg-gradient-to-br from-emerald-900 to-slate-900 text-white p-6 sm:p-8 rounded-3xl shadow-md space-y-4">
                 <div class="inline-flex items-center gap-2 bg-ieq-green/20 text-ieq-green px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
                     <i class="fa-solid fa-heart"></i> Boas-Vindas!
                 </div>
-
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-white">
-                    A sua presença é extremamente importante para nós!
-                </h2>
-
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white">A sua presença é extremamente importante para nós!</h2>
                 <blockquote class="bg-white/10 p-4 rounded-2xl border border-white/15 italic text-xs sm:text-sm text-emerald-100">
                     "Alegrei-me com os que me disseram: 'Vamos à casa do Senhor!'" (Salmos 122:1)
                 </blockquote>
             </div>
 
             <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-5">
-                <div class="border-b border-slate-100 pb-3">
-                    <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
-                        <i class="fa-solid fa-pen-to-square text-ieq-green"></i> Registro de Presença & Pedido de Oração
-                    </h3>
-                    <p class="text-xs text-slate-500">Preencha abaixo para mantermos contato!</p>
-                </div>
-
                 <form id="formVisitante" onsubmit="salvarVisitanteFirebase(event)" class="space-y-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Seu Nome *</label>
-                        <input type="text" id="visNome" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:border-ieq-green" placeholder="Ex: Maria Silva">
+                        <input type="text" id="visNome" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800" placeholder="Ex: Maria Silva">
                     </div>
-
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">WhatsApp / Telefone *</label>
-                            <input type="tel" id="visWhatsapp" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:border-ieq-green" placeholder="(14) 99999-9999">
+                            <input type="tel" id="visWhatsapp" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800" placeholder="(14) 99999-9999">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Você é...</label>
-                            <select id="visTipo" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:border-ieq-green">
+                            <select id="visTipo" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800">
                                 <option value="Primeira Vez">Primeira vez na igreja</option>
                                 <option value="Visitante Frequente">Visitante Frequente</option>
                                 <option value="Membro">Membro / Congregado</option>
                             </select>
                         </div>
                     </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Trouxe sua família?</label>
-                            <select id="visTrouxeFamilia" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800">
-                                <option value="Sim">Sim, trouxe a família</option>
-                                <option value="Não">Não, vim sozinho(a)</option>
-                                <option value="Com Amigos">Vim com amigos</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Quantas pessoas?</label>
-                            <select id="visQtdPessoas" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800">
-                                <option value="Apenas eu">Apenas eu (1)</option>
-                                <option value="2 pessoas">2 pessoas</option>
-                                <option value="3 a 4 pessoas">3 a 4 pessoas</option>
-                                <option value="5 ou mais pessoas">5 ou mais pessoas</option>
-                            </select>
-                        </div>
-                    </div>
-
                     <div class="bg-emerald-50/60 p-4 rounded-2xl border border-emerald-100 flex items-start space-x-3">
                         <input type="checkbox" id="visQueroGrupo" class="mt-1 w-4 h-4 text-ieq-green rounded accent-ieq-green cursor-pointer shrink-0" checked>
                         <label for="visQueroGrupo" class="text-xs text-slate-700 cursor-pointer">
                             <strong>Desejo ser adicionado(a) ao Grupo de Avisos do WhatsApp</strong> da igreja.
                         </label>
                     </div>
-
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Pedido de Oração (Opcional e Sigiloso)</label>
-                        <textarea id="visPedido" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:border-ieq-green" placeholder="Escreva aqui seu pedido ou motivo de oração..."></textarea>
+                        <textarea id="visPedido" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800" placeholder="Escreva aqui seu pedido..."></textarea>
                     </div>
-
                     <button type="submit" class="w-full bg-ieq-green hover:bg-ieq-greenHover text-slate-950 font-bold py-4 rounded-2xl text-sm transition shadow-md">
                         Enviar Informações 🕊️
                     </button>
                 </form>
             </div>
-
         </div>
 
         <!-- ================= ABA 5: TESTEMUNHOS ================= -->
@@ -700,46 +675,17 @@
                     <i class="fa-solid fa-hands-clapping"></i>
                 </div>
                 <h2 class="text-2xl font-extrabold">Conta o que Deus fez! 🙌</h2>
-                <p class="text-xs sm:text-sm text-slate-900 max-w-md mx-auto font-medium">
-                    "Contem a sua glória entre as nações, os seus maravilhosos feitos." (Salmo 96:3)
-                </p>
             </div>
-
             <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-4">
-                <div class="border-b border-slate-100 pb-3">
-                    <h3 class="font-bold text-slate-900 text-base">Envie o seu Testemunho ou Benção</h3>
-                </div>
-
                 <form id="formTestemunho" onsubmit="salvarTestemunhoFirebase(event)" class="space-y-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Seu Nome *</label>
                         <input type="text" id="testNome" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800" placeholder="Ex: João Pedro">
                     </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Seu WhatsApp</label>
-                        <input type="tel" id="testWhatsapp" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800" placeholder="(14) 99999-9999">
-                    </div>
-
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Conte a sua vitória / milagre *</label>
                         <textarea id="testTexto" rows="4" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800" placeholder="Escreva aqui detalhadamente..."></textarea>
                     </div>
-
-                    <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 space-y-2">
-                        <label class="block text-xs font-bold text-slate-800">Deseja compartilhar no culto?</label>
-                        <div class="space-y-2">
-                            <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
-                                <input type="radio" name="testContar" value="Quero ir lá na frente contar no culto!" class="accent-amber-600">
-                                <span class="font-bold text-amber-900">Sim! Quero ir lá na frente contar no culto! 🎤</span>
-                            </label>
-                            <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
-                                <input type="radio" name="testContar" value="Apenas para o Pastor saber" class="accent-amber-600" checked>
-                                <span>Apenas para o Pastor e a liderança saberem (Sigiloso).</span>
-                            </label>
-                        </div>
-                    </div>
-
                     <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-4 rounded-2xl text-sm transition shadow-sm">
                         Enviar Testemunho 🙌
                     </button>
@@ -766,7 +712,7 @@
                 <button onclick="switchAdminTab('visitantes')" id="tabVisBtn" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-ieq-green text-slate-950 transition whitespace-nowrap">Cadastros</button>
                 <button onclick="switchAdminTab('testemunhos')" id="tabTestBtn" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap">Testemunhos</button>
                 <button onclick="switchAdminTab('agenda')" id="tabAgendaBtn" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap">Agenda do Mês</button>
-                <button onclick="switchAdminTab('destaque')" id="tabDestBtn" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap">Configurações & Live</button>
+                <button onclick="switchAdminTab('destaque')" id="tabDestBtn" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap">Configurações & Destaque</button>
             </div>
 
             <!-- Admin Tab 1 -->
@@ -798,7 +744,7 @@
             <div id="adminTabTestemunhos" class="space-y-4 hidden bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
                 <h3 class="font-bold text-sm text-slate-900 border-b border-slate-100 pb-3">Testemunhos Recebidos</h3>
                 <div id="listaTestemunhosAdmin" class="space-y-3">
-                    <p class="text-xs text-slate-400 italic">Nenhum testemunho recebido.</p>
+                    <p class="text-xs text-slate-400 italic">Nenhum testemunho.</p>
                 </div>
             </div>
 
@@ -841,8 +787,10 @@
                 </div>
             </div>
 
-            <!-- Admin Tab 4 -->
+            <!-- Admin Tab 4 (Configurações, Live & Evento em Destaque) -->
             <div id="adminTabDestaque" class="space-y-4 hidden bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
+                <h3 class="font-bold text-sm text-slate-900 border-b border-slate-100 pb-3">Configurações Gerais, Live & Evento em Destaque</h3>
+
                 <form onsubmit="salvarDestaqueFirebase(event)" class="space-y-4">
                     <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 flex items-center space-x-3">
                         <input type="checkbox" id="admNatalCheck" class="w-5 h-5 text-amber-600 rounded cursor-pointer" checked>
@@ -860,7 +808,44 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="bg-ieq-green text-slate-950 font-bold px-6 py-3 rounded-xl text-xs w-full shadow-sm">Salvar Alterações</button>
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" id="admDestAtivo" class="w-5 h-5 text-ieq-green rounded cursor-pointer" checked>
+                            <label for="admDestAtivo" class="text-xs font-bold text-slate-800 cursor-pointer">Exibir Evento em Destaque na página inicial</label>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Título do Evento Destaque</label>
+                            <input type="text" id="admDestTitulo" class="w-full bg-white border rounded-xl px-3 py-2 text-xs">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Imagem (Arquivo ou Link)</label>
+                            <input type="file" id="admDestFile" accept="image/*" onchange="previewImagemArquivo(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-ieq-green file:text-slate-950 cursor-pointer bg-white border rounded-xl p-1 mb-2">
+                            <input type="text" id="admDestImg" class="w-full bg-white border rounded-xl px-3 py-2 text-xs" placeholder="Ou cole o link da imagem">
+                            <div class="mt-2 text-center">
+                                <img id="imgPreviewAdm" src="" class="h-28 w-full object-cover rounded-xl border">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Data & Hora</label>
+                                <input type="text" id="admDestData" class="w-full bg-white border rounded-xl px-3 py-2 text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Local</label>
+                                <input type="text" id="admDestLocal" class="w-full bg-white border rounded-xl px-3 py-2 text-xs">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Descrição</label>
+                            <textarea id="admDestDesc" rows="2" class="w-full bg-white border rounded-xl px-3 py-2 text-xs"></textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="bg-ieq-green text-slate-950 font-bold px-6 py-3 rounded-xl text-xs w-full shadow-sm">Salvar Todas as Configurações 🚀</button>
                 </form>
             </div>
 
@@ -868,13 +853,13 @@
 
     </main>
 
-    <!-- Toast de Notificação -->
+    <!-- Toast -->
     <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-2xl text-xs font-bold shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2">
         <i class="fa-solid fa-circle-check text-ieq-green text-sm"></i>
         <span id="toastMsg">Ação realizada com sucesso!</span>
     </div>
 
-    <!-- Scripts de Controle -->
+    <!-- Scripts -->
     <script>
         let imagemTemporariaBase64 = null;
 
@@ -889,6 +874,14 @@
                 };
                 reader.readAsDataURL(file);
             }
+        }
+
+        function toggleCelulas() {
+            const list = document.getElementById('listaCelulas');
+            const icon = document.getElementById('iconSetaCelulas');
+            list.classList.toggle('hidden');
+            icon.classList.toggle('fa-chevron-down');
+            icon.classList.toggle('fa-chevron-up');
         }
 
         function mostrarToast(msg) {
@@ -927,7 +920,7 @@
                 document.getElementById('navPortal').className = "px-4 py-2 text-xs font-bold rounded-full bg-ieq-green text-slate-950 shadow-sm transition whitespace-nowrap shrink-0 flex items-center gap-1.5";
             } else if (view === 'quadrangular') {
                 document.getElementById('viewQuadrangular').classList.remove('hidden');
-                document.getElementById('navQuadrangular').className = "px-4 py-2 text-xs font-black rounded-full quadrangular-gradient text-white shadow-lg transition whitespace-nowrap shrink-0 flex items-center gap-1.5 animate-pulse";
+                document.getElementById('navQuadrangular').className = "px-4 py-2 text-xs font-black rounded-full quadrangular-gradient text-white shadow-lg transition whitespace-nowrap shrink-0 flex items-center gap-1.5";
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } else if (view === 'natal') {
                 document.getElementById('viewNatal').classList.remove('hidden');
@@ -983,8 +976,6 @@
                 nome: document.getElementById('visNome').value,
                 whatsapp: document.getElementById('visWhatsapp').value,
                 tipo: document.getElementById('visTipo').value,
-                trouxeFamilia: document.getElementById('visTrouxeFamilia').value,
-                qtdPessoas: document.getElementById('visQtdPessoas').value,
                 queroGrupo: document.getElementById('visQueroGrupo').checked,
                 pedido: document.getElementById('visPedido').value || "Nenhum pedido",
                 data: new Date().toLocaleDateString('pt-BR')
@@ -998,15 +989,9 @@
 
         async function salvarTestemunhoFirebase(e) {
             e.preventDefault();
-            const radios = document.getElementsByName('testContar');
-            let opcao = "Apenas para o Pastor saber";
-            for (let r of radios) { if (r.checked) { opcao = r.value; break; } }
-
             const novo = {
                 nome: document.getElementById('testNome').value,
-                whatsapp: document.getElementById('testWhatsapp').value || "Não informado",
                 texto: document.getElementById('testTexto').value,
-                contarNoCulto: opcao,
                 data: new Date().toLocaleDateString('pt-BR')
             };
             try {
@@ -1057,15 +1042,26 @@
 
         async function salvarDestaqueFirebase(e) {
             e.preventDefault();
+            const urlLink = document.getElementById('admDestImg').value;
+            const imgFinal = imagemTemporariaBase64 || urlLink || document.getElementById('destaqueImagem').src;
+
             const dados = {
                 aoVivo: document.getElementById('admAoVivoCheck').checked,
                 linkYtb: document.getElementById('admAoVivoYtb').value,
                 linkFb: document.getElementById('admAoVivoFb').value,
-                natalAtivo: document.getElementById('admNatalCheck').checked
+                natalAtivo: document.getElementById('admNatalCheck').checked,
+                ativo: document.getElementById('admDestAtivo').checked,
+                titulo: document.getElementById('admDestTitulo').value,
+                imagem: imgFinal,
+                dataHora: document.getElementById('admDestData').value,
+                local: document.getElementById('admDestLocal').value,
+                desc: document.getElementById('admDestDesc').value
             };
             try {
-                await window.setDoc(window.doc(window.dbFirestore, "configuracoes", "destaque"), dados, { merge: true });
-                mostrarToast("Configurações salvas!");
+                await window.setDoc(window.doc(window.dbFirestore, "configuracoes", "destaque"), dados);
+                imagemTemporariaBase64 = null;
+                document.getElementById('admDestFile').value = '';
+                mostrarToast("Configurações salvas com sucesso!");
             } catch(err) { alert("Erro ao salvar."); }
         }
 
