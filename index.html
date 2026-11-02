@@ -315,7 +315,7 @@
                 <!-- Coluna Direita -->
                 <div class="space-y-6">
                     
-                    <!-- Evento em Destaque & Confirmação de Presença (RSVP) -->
+                    <!-- Evento em Destaque & Confirmação de Presença -->
                     <div id="cardDestaqueContainer" class="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col">
                         <div class="relative h-48 sm:h-52 w-full bg-slate-100">
                             <img id="destaqueImagem" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1000&q=80" alt="Evento em Destaque" class="w-full h-full object-cover">
@@ -343,7 +343,7 @@
                             <!-- Botão / Seção de Confirmar Presença (RSVP) -->
                             <div id="rsvpDestaqueSec" class="hidden pt-3 border-t border-slate-100">
                                 <button onclick="abrirModalRsvp()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-sm">
-                                    <i class="fa-solid fa-check-to-slot text-ieq-green"></i> Confirmar Presença (Eventos/Alimentação)
+                                    <i class="fa-solid fa-user-check text-ieq-green"></i> Confirmar Presença no Evento
                                 </button>
                             </div>
                         </div>
@@ -676,7 +676,7 @@
                         </div>
                     </div>
 
-                    <!-- ADICIONADO: Com quem veio e quantidade -->
+                    <!-- Com quem veio e quantidade -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Com quem você veio hoje?</label>
@@ -729,7 +729,7 @@
                         <textarea id="testTexto" rows="4" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800" placeholder="Escreva aqui detalhadamente..."></textarea>
                     </div>
 
-                    <!-- ADICIONADO: Pergunta com 3 opções para o testemunho -->
+                    <!-- Pergunta com 3 opções para o testemunho -->
                     <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
                         <label class="block text-xs font-bold text-slate-800">Como você prefere que seu testemunho seja compartilhado?</label>
                         <div class="space-y-2 text-xs">
@@ -773,7 +773,7 @@
             <div class="flex space-x-2 border-b border-slate-200 pb-2 overflow-x-auto no-scrollbar">
                 <button onclick="switchAdminTab('visitantes')" id="tabVisBtn" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-ieq-green text-slate-950 transition whitespace-nowrap">Cadastros</button>
                 <button onclick="switchAdminTab('testemunhos')" id="tabTestBtn" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap">Testemunhos</button>
-                <button onclick="switchAdminTab('rsvp')" id="tabRsvpBtn" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap">Central RSVP (Alimentação)</button>
+                <button onclick="switchAdminTab('rsvp')" id="tabRsvpBtn" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap">Central de Presença</button>
                 <button onclick="switchAdminTab('agenda')" id="tabAgendaBtn" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap">Agenda do Mês</button>
                 <button onclick="switchAdminTab('destaque')" id="tabDestBtn" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap">Configurações & Destaque</button>
             </div>
@@ -815,8 +815,8 @@
             <div id="adminTabRsvp" class="space-y-4 hidden bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
                 <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                     <div>
-                        <h3 class="font-bold text-sm text-slate-900">Central do Evento • Confirmações de Presença (Controle de Alimentos e Bebidas)</h3>
-                        <p class="text-xs text-slate-400">Total de pessoas confirmadas para o cálculo de comida e bebida</p>
+                        <h3 class="font-bold text-sm text-slate-900">Central do Evento • Confirmações de Presença</h3>
+                        <p class="text-xs text-slate-400">Total de pessoas confirmadas para o evento</p>
                     </div>
                     <div class="bg-ieq-green/25 text-ieq-darkGreen font-black px-4 py-2 rounded-xl text-sm">
                         Total Confirmados: <span id="statTotalRsvpPessoas">0</span> pessoas
@@ -893,10 +893,10 @@
                             <label for="admDestAtivo" class="text-xs font-bold text-slate-800 cursor-pointer">Exibir Evento em Destaque na página inicial</label>
                         </div>
 
-                        <!-- ADICIONADO: Opção para ativar/desligar o botão de Confirmar Presença (RSVP) -->
+                        <!-- Opção para ativar/desligar o botão de Confirmar Presença -->
                         <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 flex items-center space-x-3">
                             <input type="checkbox" id="admRsvpCheck" class="w-5 h-5 text-ieq-green rounded cursor-pointer">
-                            <label for="admRsvpCheck" class="text-xs font-bold text-emerald-950 cursor-pointer">✅ Ativar Botão de "Confirmar Presença (Alimentação)" no Destaque</label>
+                            <label for="admRsvpCheck" class="text-xs font-bold text-emerald-950 cursor-pointer">✅ Ativar Botão de "Confirmar Presença" no Destaque</label>
                         </div>
 
                         <div>
@@ -938,12 +938,12 @@
 
     </main>
 
-    <!-- MODAL DE CONFIRMAÇÃO DE PRESENÇA (RSVP) -->
+    <!-- MODAL DE CONFIRMAÇÃO DE PRESENÇA -->
     <div id="modalRsvp" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-200 space-y-4">
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                 <h3 class="font-extrabold text-slate-900 text-base flex items-center gap-2">
-                    <i class="fa-solid fa-utensils text-ieq-green"></i> Confirmar Presença
+                    <i class="fa-solid fa-user-check text-ieq-green"></i> Confirmar Presença
                 </h3>
                 <button onclick="fecharModalRsvp()" class="text-slate-400 hover:text-slate-600 font-bold text-sm"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
@@ -958,12 +958,12 @@
                     <input type="tel" id="rsvpWhatsapp" required class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-xs text-slate-800" placeholder="(14) 99999-9999">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Incluir familiares? Quantas pessoas irão ao todo (incluindo você)? *</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Quantas pessoas irão ao todo (incluindo você)? *</label>
                     <input type="number" id="rsvpTotalPessoas" min="1" value="1" required class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-xs text-slate-800">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Observações / Restrição Alimentar (Opcional)</label>
-                    <input type="text" id="rsvpObs" class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-xs text-slate-800" placeholder="Ex: Exemplo de dieta ou nenhuma">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Observações (Opcional)</label>
+                    <input type="text" id="rsvpObs" class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-xs text-slate-800" placeholder="Ex: Nenhuma observação">
                 </div>
                 <button type="submit" class="w-full bg-ieq-green hover:bg-ieq-greenHover text-slate-950 font-bold py-3 rounded-xl text-xs transition shadow-sm">
                     Confirmar Presença no Evento ✨
@@ -1240,7 +1240,6 @@
         }
 
         window.renderizarVisitantesAdmin = function(visitantes) {
-            // Calcular total real de visitantes considerando acompanhantes
             const totalPessoasMes = visitantes.reduce((acc, v) => acc + (v.qtdPessoas || 1), 0);
             document.getElementById('statVisitantes').innerText = totalPessoasMes;
             document.getElementById('statGrupoWhats').innerText = visitantes.filter(v => v.queroGrupo).length;
