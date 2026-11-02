@@ -445,25 +445,12 @@
                 </div>
 
                 <!-- VÍDEO OFICIAL DE APRESENTAÇÃO DO MÊS QUADRANGULAR -->
-                <div class="bg-black/40 backdrop-blur-md p-3 sm:p-5 rounded-3xl border-2 border-white/20 shadow-2xl relative z-10 max-w-4xl mx-auto space-y-3">
-                    <div class="flex items-center justify-between px-2">
-                        <span class="text-xs font-bold text-amber-300 uppercase tracking-widest flex items-center gap-1.5">
-                            <i class="fa-solid fa-video"></i> Vídeo Oficial • Mês Quadrangular
-                        </span>
-                        <span class="text-[10px] bg-white/20 text-white px-3 py-0.5 rounded-full">Apresentação Nacional</span>
-                    </div>
-                    
-                    <div class="relative w-full rounded-2xl overflow-hidden shadow-2xl bg-slate-950 aspect-video flex items-center justify-center">
-                        <!-- Substitua o link do src do iframe se tiver o vídeo no YouTube, ou exibe o player nativo se enviar para o GitHub -->
-                        <iframe class="w-full h-full object-cover" src="https://www.youtube.com/embed/videoseries?list=PL..." title="Mês Quadrangular Video" allowfullscreen onerror="this.style.display='none'; document.getElementById('fallbackVideo').classList.remove('hidden')"></iframe>
-                        
-                        <div id="fallbackVideo" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-slate-900/90 space-y-3">
-                            <i class="fa-solid fa-film text-4xl text-amber-400"></i>
-                            <p class="text-xs text-slate-200">Vídeo de Apresentação do Mês Quadrangular (Disponível na pasta do Drive / GitHub)</p>
-                            <a href="https://www.youtube.com/@QuadrangularPampulhaAgudosSP" target="_blank" class="bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-xl">Assistir no Canal do YouTube</a>
-                        </div>
-                    </div>
-                </div>
+                <div class="relative w-full rounded-2xl overflow-hidden shadow-2xl bg-slate-950 aspect-video flex items-center justify-center">
+        <video controls class="w-full h-full object-cover">
+            <source src="mes-quadrangular.mp4" type="video/mp4">
+            Seu navegador não suporta a reprodução de vídeo.
+        </video>
+    </div>
 
                 <!-- Os 4 Pilares da Doutrina (Widescreen Grid 4 Colunas) -->
                 <div class="space-y-4 relative z-10 pt-4">
