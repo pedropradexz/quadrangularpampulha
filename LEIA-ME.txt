@@ -1,0 +1,4 @@
+Coloque aqui as fontes originais do Drive, com estes nomes:
+  display.woff2 (ou display.otf / display.ttf)  -> fonte condensada dos titulos
+  destaque.woff2 (ou destaque.otf / destaque.ttf) -> fonte serifada decorativa dos destaques
+Enquanto os arquivos nao estiverem aqui, o site usa fontes substitutas.
