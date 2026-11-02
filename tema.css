@@ -39,7 +39,7 @@ header p{color:#cbd5e1!important}
     background-size:auto,200% 100%;background-position:0 0,0 0;animation:tqSlide 14s linear infinite alternate}
 @keyframes tqSlide{to{background-position:0 0,100% 0}}
 
-/* TIPOGRAFIA RESTRITA: Apenas dentro da área do Mês Quadrangular para não afetar o site todo */
+/* TIPOGRAFIA RESTRITA */
 #viewQuadrangular h2, #viewQuadrangular h3 {
     font-family: var(--f-display)!important;
     letter-spacing: .02em;
