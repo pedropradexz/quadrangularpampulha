@@ -107,6 +107,15 @@
                 if(document.getElementById('destaqueDataHora')) document.getElementById('destaqueDataHora').innerText = data.dataHora || '';
                 if(document.getElementById('destaqueLocal')) document.getElementById('destaqueLocal').innerText = data.local || '';
 
+                // RSVP / Confirmação de Presença no Destaque
+                const rsvpSec = document.getElementById('rsvpDestaqueSec');
+                if (data.rsvpAtivo === true) {
+                    if(rsvpSec) rsvpSec.classList.remove('hidden');
+                } else {
+                    if(rsvpSec) rsvpSec.classList.add('hidden');
+                }
+                document.getElementById('admRsvpCheck').checked = data.rsvpAtivo === true;
+
                 document.getElementById('admDestAtivo').checked = data.ativo !== false;
                 document.getElementById('admDestTitulo').value = data.titulo || '';
                 document.getElementById('admDestImg').value = (data.imagem && data.imagem.startsWith('data:image')) ? '' : (data.imagem || '');
@@ -129,6 +138,12 @@
             window.renderizarTestemunhosAdmin(listaTest);
         });
 
+        onSnapshot(collection(db, "rsvp_evento"), (snapshot) => {
+            const listaRsvp = [];
+            snapshot.forEach((doc) => { listaRsvp.push({ id: doc.id, ...doc.data() }); });
+            window.renderizarRsvpAdmin(listaRsvp);
+        });
+
         onSnapshot(collection(db, "agenda"), (snapshot) => {
             const listaAgenda = [];
             snapshot.forEach((doc) => { listaAgenda.push({ id: doc.id, ...doc.data() }); });
@@ -148,7 +163,7 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
-       <link rel="stylesheet" href="tema.css">
+    <link rel="stylesheet" href="tema.css">
 </head>
 <body class="bg-ieq-cream text-slate-800 min-h-screen flex flex-col">
 
@@ -246,7 +261,7 @@
                             </div>
                             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-3">Que alegria ter você aqui conosco! 🙏</h2>
                             <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-4">
-                                Seja muito bem-vindo à <strong>Quadrangular Pampulha</strong>[cite: 1, 2]. Aqui você encontra um ambiente de fé, comunhão e amor fraternal. Se você é visitante e veio nos cultuar hoje, preencha nosso cadastro rápido para que possamos nos conectar e orar por sua vida e sua família.
+                                Seja muito bem-vindo à <strong>Quadrangular Pampulha</strong>. Aqui você encontra um ambiente de fé, comunhão e amor fraternal. Se você é visitante e veio nos cultuar hoje, preencha nosso cadastro rápido para que possamos nos conectar e orar por sua vida e sua família.
                             </p>
                             <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-6">
                                 Acompanhe nossa programação semanal, participe das células e cresça na presença do Senhor. Há sempre um lugar especial reservado para você!
@@ -300,7 +315,7 @@
                 <!-- Coluna Direita -->
                 <div class="space-y-6">
                     
-                    <!-- Evento em Destaque -->
+                    <!-- Evento em Destaque & Confirmação de Presença (RSVP) -->
                     <div id="cardDestaqueContainer" class="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col">
                         <div class="relative h-48 sm:h-52 w-full bg-slate-100">
                             <img id="destaqueImagem" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1000&q=80" alt="Evento em Destaque" class="w-full h-full object-cover">
@@ -324,10 +339,17 @@
                                     <span id="destaqueLocal">Templo Principal - IEQ Pampulha</span>
                                 </div>
                             </div>
+
+                            <!-- Botão / Seção de Confirmar Presença (RSVP) -->
+                            <div id="rsvpDestaqueSec" class="hidden pt-3 border-t border-slate-100">
+                                <button onclick="abrirModalRsvp()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-sm">
+                                    <i class="fa-solid fa-check-to-slot text-ieq-green"></i> Confirmar Presença (Eventos/Alimentação)
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Programação Semanal Completa (Com Segunda e Terça restauradas) -->
+                    <!-- Programação Semanal Completa -->
                     <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-4">
                         <div class="flex items-center space-x-3 border-b border-slate-100 pb-3">
                             <div class="w-9 h-9 rounded-xl bg-ieq-green/20 text-ieq-darkGreen flex items-center justify-center font-bold text-sm">
@@ -349,13 +371,11 @@
                                 <span class="font-extrabold bg-ieq-green/20 text-ieq-darkGreen px-2.5 py-1 rounded-full">18h30</span>
                             </div>
                             
-                            <!-- Segunda-feira (Oração) -->
                             <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex justify-between items-center">
                                 <span class="font-bold text-slate-900">Segunda (Reunião de Oração)</span>
                                 <span class="font-extrabold bg-blue-100 text-blue-800 px-2.5 py-1 rounded-full">19h00</span>
                             </div>
 
-                            <!-- Terça-feira (Células com expansor) -->
                             <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 space-y-2">
                                 <div class="flex justify-between items-center">
                                     <div>
@@ -411,7 +431,7 @@
 
             </div>
 
-            <!-- Redes Sociais Widescreen -->
+            <!-- Redes Sociais -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <a href="https://www.instagram.com/quadrangularpampulha/" target="_blank" class="bg-white hover:bg-slate-50 p-5 rounded-3xl border border-slate-200/80 shadow-sm text-center transition flex flex-col items-center group">
                     <div class="w-12 h-12 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center mb-2 group-hover:scale-110 transition shadow-inner">
@@ -480,18 +500,18 @@
                         <i class="fa-solid fa-flag text-ieq-red"></i> Novembro • Mês Quadrangular Oficial
                     </span>
                     <span class="text-xs sm:text-sm font-black text-amber-200 bg-black/30 px-4 py-1.5 rounded-full border border-white/20">
-                        ✨ 75 Anos de História no Brasil (Jubileu de Brilhante)[cite: 12]
+                        ✨ 75 Anos de História no Brasil (Jubileu de Brilhante)
                     </span>
                 </div>
 
                 <div class="text-center space-y-4 relative z-10 max-w-3xl mx-auto py-2">
                     <h2 class="text-4xl sm:text-6xl font-black drop-shadow-lg tracking-tight">Mês Quadrangular</h2>
                     <p class="text-sm sm:text-base text-white/95 leading-relaxed">
-                        Novembro é o Mês Quadrangular, um período de profunda celebração da nossa fé e identidade como Igreja[cite: 14]. A identidade visual reflete essa essência, unindo as quatro cores que representam a doutrina Quadrangular[cite: 14].
+                        Novembro é o Mês Quadrangular, um período de profunda celebração da nossa fé e identidade como Igreja. A identidade visual reflete essa essência, unindo as quatro cores que representam a doutrina Quadrangular.
                     </p>
                 </div>
 
-                <!-- VÍDEO DO MÊS QUADRANGULAR (YouTube com o link correto) -->
+                <!-- VÍDEO DO MÊS QUADRANGULAR -->
                 <div class="bg-black/40 backdrop-blur-md p-3 sm:p-5 rounded-3xl border-2 border-white/20 shadow-2xl relative z-10 max-w-4xl mx-auto space-y-3">
                     <div class="flex items-center justify-between px-2">
                         <span class="text-xs font-bold text-amber-300 uppercase tracking-widest flex items-center gap-1.5">
@@ -508,7 +528,7 @@
                 <!-- 4 Pilares -->
                 <div class="space-y-4 relative z-10 pt-4">
                     <h3 class="font-extrabold text-white text-base sm:text-lg uppercase tracking-wider text-center flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-star text-amber-300"></i> O Evangelho Completo de Jesus Cristo[cite: 14]
+                        <i class="fa-solid fa-star text-amber-300"></i> O Evangelho Completo de Jesus Cristo
                     </h3>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs sm:text-sm">
@@ -516,7 +536,7 @@
                             <div class="space-y-2">
                                 <div class="w-10 h-10 rounded-2xl bg-red-600 text-white flex items-center justify-center text-base shadow-md">✝️</div>
                                 <h4 class="text-red-300 font-black text-base">Jesus Salva</h4>
-                                <p class="text-slate-200 text-xs leading-relaxed">Representado pela cor vermelha do sangue vertido na cruz[cite: 14]. É o fundamento da nossa redenção.</p>
+                                <p class="text-slate-200 text-xs leading-relaxed">Representado pela cor vermelha do sangue vertido na cruz. É o fundamento da nossa redenção.</p>
                             </div>
                             <span class="text-[10px] text-red-300 font-bold uppercase tracking-wider pt-2 border-t border-red-500/30">1º Pilar</span>
                         </div>
@@ -525,7 +545,7 @@
                             <div class="space-y-2">
                                 <div class="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center text-base shadow-md">🕊️</div>
                                 <h4 class="text-amber-300 font-black text-base">Jesus Batiza</h4>
-                                <p class="text-slate-200 text-xs leading-relaxed">Representado pelo amarelo do fogo e do poder do Espírito Santo[cite: 14] para testemunhar.</p>
+                                <p class="text-slate-200 text-xs leading-relaxed">Representado pelo amarelo do fogo e do poder do Espírito Santo para testemunhar.</p>
                             </div>
                             <span class="text-[10px] text-amber-300 font-bold uppercase tracking-wider pt-2 border-t border-amber-500/30">2º Pilar</span>
                         </div>
@@ -534,7 +554,7 @@
                             <div class="space-y-2">
                                 <div class="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-base shadow-md">🏆</div>
                                 <h4 class="text-blue-300 font-black text-base">Jesus Cura</h4>
-                                <p class="text-slate-200 text-xs leading-relaxed">Representado pelo azul das águas e da cura divina[cite: 14] para o corpo, alma e espírito.</p>
+                                <p class="text-slate-200 text-xs leading-relaxed">Representado pelo azul das águas e da cura divina para o corpo, alma e espírito.</p>
                             </div>
                             <span class="text-[10px] text-blue-300 font-bold uppercase tracking-wider pt-2 border-t border-blue-500/30">3º Pilar</span>
                         </div>
@@ -543,7 +563,7 @@
                             <div class="space-y-2">
                                 <div class="w-10 h-10 rounded-2xl bg-purple-600 text-white flex items-center justify-center text-base shadow-md">👑</div>
                                 <h4 class="text-purple-300 font-black text-base">Jesus Voltará</h4>
-                                <p class="text-slate-200 text-xs leading-relaxed">Representado pela cor real (roxo)[cite: 14], simbolizando a bendita esperança do retorno do Rei.</p>
+                                <p class="text-slate-200 text-xs leading-relaxed">Representado pela cor real (roxo), simbolizando a bendita esperança do retorno do Rei.</p>
                             </div>
                             <span class="text-[10px] text-purple-300 font-bold uppercase tracking-wider pt-2 border-t border-purple-500/30">4º Pilar</span>
                         </div>
@@ -554,8 +574,8 @@
                     <h3 class="font-black text-amber-300 text-base sm:text-lg uppercase tracking-wider flex items-center gap-2">
                         <i class="fa-solid fa-church text-ieq-green"></i> Nossa Identidade e Missão em Novembro
                     </h3>
-                    <p>As formas geométricas expressam dinamismo e propósito, revelando uma igreja viva, sólida e em movimento[cite: 14]. A tipografia com traços limpos reforça a clareza e a força da mensagem[cite: 14].</p>
-                    <p class="italic text-amber-200 font-medium">"Que este mês nos inspire a viver o evangelho completo de Jesus Cristo: o Salvador, o Batizador com o Espírito Santo, o Médico dos médicos e o Rei que voltará."[cite: 14]</p>
+                    <p>As formas geométricas expressam dinamismo e propósito, revelando uma igreja viva, sólida e em movimento. A tipografia com traços limpos reforça a clareza e a força da mensagem.</p>
+                    <p class="italic text-amber-200 font-medium">"Que este mês nos inspire a viver o evangelho completo de Jesus Cristo: o Salvador, o Batizador com o Espírito Santo, o Médico dos médicos e o Rei que voltará."</p>
                 </div>
 
                 <div class="pt-2 text-center relative z-10">
@@ -626,7 +646,10 @@
                 <div class="inline-flex items-center gap-2 bg-ieq-green/20 text-ieq-green px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
                     <i class="fa-solid fa-heart"></i> Boas-Vindas!
                 </div>
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-white">A sua presença é extremamente importante para nós!</h2>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Que alegria imensa ter você aqui com a gente! ✨</h2>
+                <p class="text-emerald-100 text-xs sm:text-sm leading-relaxed">
+                    Sua presença é um presente de Deus para o nosso dia! Preparamos este espaço com muito carinho para que você se sinta em casa, acolhido(a) e abraçado(a) pela nossa família na fé. Queremos caminhar juntos com você! 🙏
+                </p>
                 <blockquote class="bg-white/10 p-4 rounded-2xl border border-white/15 italic text-xs sm:text-sm text-emerald-100">
                     "Alegrei-me com os que me disseram: 'Vamos à casa do Senhor!'" (Salmos 122:1)
                 </blockquote>
@@ -652,6 +675,23 @@
                             </select>
                         </div>
                     </div>
+
+                    <!-- ADICIONADO: Com quem veio e quantidade -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Com quem você veio hoje?</label>
+                            <select id="visComQuem" onchange="toggleQtdAcompanhantes(this.value)" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-800">
+                                <option value="Sozinha(o)">Sozinha(o)</option>
+                                <option value="Família">Família</option>
+                                <option value="Amigos">Amigos</option>
+                            </select>
+                        </div>
+                        <div id="divQtdAcompanhantes" class="hidden">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Quantas pessoas vieram com você?</label>
+                            <input type="number" id="visQtdPessoas" min="1" value="1" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs text-slate-800" placeholder="Ex: 2">
+                        </div>
+                    </div>
+
                     <div class="bg-emerald-50/60 p-4 rounded-2xl border border-emerald-100 flex items-start space-x-3">
                         <input type="checkbox" id="visQueroGrupo" class="mt-1 w-4 h-4 text-ieq-green rounded accent-ieq-green cursor-pointer shrink-0" checked>
                         <label for="visQueroGrupo" class="text-xs text-slate-700 cursor-pointer">
@@ -676,6 +716,7 @@
                     <i class="fa-solid fa-hands-clapping"></i>
                 </div>
                 <h2 class="text-2xl font-extrabold">Conta o que Deus fez! 🙌</h2>
+                <p class="text-xs text-slate-900 font-medium">O seu testemunho glorifica o nome do Senhor e fortalece a fé de quem está ouvindo.</p>
             </div>
             <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-4">
                 <form id="formTestemunho" onsubmit="salvarTestemunhoFirebase(event)" class="space-y-4">
@@ -687,6 +728,26 @@
                         <label class="block text-xs font-bold text-slate-700 mb-1">Conte a sua vitória / milagre *</label>
                         <textarea id="testTexto" rows="4" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800" placeholder="Escreva aqui detalhadamente..."></textarea>
                     </div>
+
+                    <!-- ADICIONADO: Pergunta com 3 opções para o testemunho -->
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
+                        <label class="block text-xs font-bold text-slate-800">Como você prefere que seu testemunho seja compartilhado?</label>
+                        <div class="space-y-2 text-xs">
+                            <label class="flex items-center gap-2 cursor-pointer bg-white p-2.5 rounded-xl border">
+                                <input type="radio" name="testOpcao" value="Contar lá na frente para a igreja" checked class="text-amber-500 accent-amber-500">
+                                <span>Quero contar lá na frente para a igreja</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer bg-white p-2.5 rounded-xl border">
+                                <input type="radio" name="testOpcao" value="Pode ser citado" class="text-amber-500 accent-amber-500">
+                                <span>Pode ser citado (sem precisar ir à frente)</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer bg-white p-2.5 rounded-xl border">
+                                <input type="radio" name="testOpcao" value="Sigiloso" class="text-amber-500 accent-amber-500">
+                                <span>Sigiloso (apenas para conhecimento do pastor/liderança)</span>
+                            </label>
+                        </div>
+                    </div>
+
                     <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-4 rounded-2xl text-sm transition shadow-sm">
                         Enviar Testemunho 🙌
                     </button>
@@ -712,6 +773,7 @@
             <div class="flex space-x-2 border-b border-slate-200 pb-2 overflow-x-auto no-scrollbar">
                 <button onclick="switchAdminTab('visitantes')" id="tabVisBtn" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-ieq-green text-slate-950 transition whitespace-nowrap">Cadastros</button>
                 <button onclick="switchAdminTab('testemunhos')" id="tabTestBtn" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap">Testemunhos</button>
+                <button onclick="switchAdminTab('rsvp')" id="tabRsvpBtn" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap">Central RSVP (Alimentação)</button>
                 <button onclick="switchAdminTab('agenda')" id="tabAgendaBtn" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap">Agenda do Mês</button>
                 <button onclick="switchAdminTab('destaque')" id="tabDestBtn" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap">Configurações & Destaque</button>
             </div>
@@ -720,7 +782,7 @@
             <div id="adminTabVisitantes" class="space-y-5">
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-                        <span class="text-xs text-slate-400 block mb-1">Total Cadastros</span>
+                        <span class="text-xs text-slate-400 block mb-1">Total de Cadastros / Visitantes do Mês</span>
                         <h3 class="text-3xl font-bold text-slate-900" id="statVisitantes">0</h3>
                     </div>
                     <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
@@ -734,7 +796,7 @@
                 </div>
 
                 <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
-                    <h3 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-3">Lista de Cadastros</h3>
+                    <h3 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-3">Lista de Cadastros e Quantidade de Acompanhantes</h3>
                     <div id="listaVisitantesAdmin" class="space-y-3">
                         <p class="text-xs text-slate-400 italic">Nenhum visitante cadastrado.</p>
                     </div>
@@ -743,13 +805,29 @@
 
             <!-- Admin Tab 2 -->
             <div id="adminTabTestemunhos" class="space-y-4 hidden bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
-                <h3 class="font-bold text-sm text-slate-900 border-b border-slate-100 pb-3">Testemunhos Recebidos</h3>
+                <h3 class="font-bold text-sm text-slate-900 border-b border-slate-100 pb-3">Testemunhos Recebidos & Opções de Divulgação</h3>
                 <div id="listaTestemunhosAdmin" class="space-y-3">
                     <p class="text-xs text-slate-400 italic">Nenhum testemunho.</p>
                 </div>
             </div>
 
-            <!-- Admin Tab 3 -->
+            <!-- Admin Tab 3: Central RSVP -->
+            <div id="adminTabRsvp" class="space-y-4 hidden bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                    <div>
+                        <h3 class="font-bold text-sm text-slate-900">Central do Evento • Confirmações de Presença (Controle de Alimentos e Bebidas)</h3>
+                        <p class="text-xs text-slate-400">Total de pessoas confirmadas para o cálculo de comida e bebida</p>
+                    </div>
+                    <div class="bg-ieq-green/25 text-ieq-darkGreen font-black px-4 py-2 rounded-xl text-sm">
+                        Total Confirmados: <span id="statTotalRsvpPessoas">0</span> pessoas
+                    </div>
+                </div>
+                <div id="listaRsvpAdmin" class="space-y-3">
+                    <p class="text-xs text-slate-400 italic">Nenhuma confirmação registrada até o momento.</p>
+                </div>
+            </div>
+
+            <!-- Admin Tab 4 -->
             <div id="adminTabAgenda" class="space-y-4 hidden bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
                 <h3 class="font-bold text-sm text-slate-900 border-b border-slate-100 pb-3">Gerenciar Agenda do Mês</h3>
                 
@@ -788,7 +866,7 @@
                 </div>
             </div>
 
-            <!-- Admin Tab 4 (Configurações, Live & Evento em Destaque) -->
+            <!-- Admin Tab 5 (Configurações, Live, RSVP & Destaque) -->
             <div id="adminTabDestaque" class="space-y-4 hidden bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
                 <h3 class="font-bold text-sm text-slate-900 border-b border-slate-100 pb-3">Configurações Gerais, Live & Evento em Destaque</h3>
 
@@ -813,6 +891,12 @@
                         <div class="flex items-center space-x-3">
                             <input type="checkbox" id="admDestAtivo" class="w-5 h-5 text-ieq-green rounded cursor-pointer" checked>
                             <label for="admDestAtivo" class="text-xs font-bold text-slate-800 cursor-pointer">Exibir Evento em Destaque na página inicial</label>
+                        </div>
+
+                        <!-- ADICIONADO: Opção para ativar/desligar o botão de Confirmar Presença (RSVP) -->
+                        <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 flex items-center space-x-3">
+                            <input type="checkbox" id="admRsvpCheck" class="w-5 h-5 text-ieq-green rounded cursor-pointer">
+                            <label for="admRsvpCheck" class="text-xs font-bold text-emerald-950 cursor-pointer">✅ Ativar Botão de "Confirmar Presença (Alimentação)" no Destaque</label>
                         </div>
 
                         <div>
@@ -854,6 +938,40 @@
 
     </main>
 
+    <!-- MODAL DE CONFIRMAÇÃO DE PRESENÇA (RSVP) -->
+    <div id="modalRsvp" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-200 space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="font-extrabold text-slate-900 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-utensils text-ieq-green"></i> Confirmar Presença
+                </h3>
+                <button onclick="fecharModalRsvp()" class="text-slate-400 hover:text-slate-600 font-bold text-sm"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <form onsubmit="salvarRsvpFirebase(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Seu Nome *</label>
+                    <input type="text" id="rsvpNome" required class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-xs text-slate-800" placeholder="Ex: Carlos Alberto">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">WhatsApp *</label>
+                    <input type="tel" id="rsvpWhatsapp" required class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-xs text-slate-800" placeholder="(14) 99999-9999">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Incluir familiares? Quantas pessoas irão ao todo (incluindo você)? *</label>
+                    <input type="number" id="rsvpTotalPessoas" min="1" value="1" required class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-xs text-slate-800">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Observações / Restrição Alimentar (Opcional)</label>
+                    <input type="text" id="rsvpObs" class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-xs text-slate-800" placeholder="Ex: Exemplo de dieta ou nenhuma">
+                </div>
+                <button type="submit" class="w-full bg-ieq-green hover:bg-ieq-greenHover text-slate-950 font-bold py-3 rounded-xl text-xs transition shadow-sm">
+                    Confirmar Presença no Evento ✨
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-2xl text-xs font-bold shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2">
         <i class="fa-solid fa-circle-check text-ieq-green text-sm"></i>
@@ -884,6 +1002,19 @@
             icon.classList.toggle('fa-chevron-down');
             icon.classList.toggle('fa-chevron-up');
         }
+
+        function toggleQtdAcompanhantes(val) {
+            const div = document.getElementById('divQtdAcompanhantes');
+            if (val === 'Família' || val === 'Amigos') {
+                div.classList.remove('hidden');
+            } else {
+                div.classList.add('hidden');
+                document.getElementById('visQtdPessoas').value = '1';
+            }
+        }
+
+        function abrirModalRsvp() { document.getElementById('modalRsvp').classList.remove('hidden'); }
+        function fecharModalRsvp() { document.getElementById('modalRsvp').classList.add('hidden'); }
 
         function mostrarToast(msg) {
             const toast = document.getElementById('toast');
@@ -942,25 +1073,25 @@
         }
 
         async function checkAdminAccess() {
-    const senha = prompt("Digite a senha do painel da secretaria:");
-    if (senha === null) return;
-    const dados = new TextEncoder().encode("quadrangular-pampulha:" + senha);
-    const buf = await crypto.subtle.digest("SHA-256", dados);
-    const hash = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
-    if (hash === "5b3c3c63c0daf41ef103f77095ff3e13e0d22820831fe8611063006e59f99a4b") {
-        switchView('admin');
-    } else {
-        alert("Senha incorreta!");
-    }
-}
+            const senha = prompt("Digite a senha do painel da secretaria:");
+            if (senha === null) return;
+            const dados = new TextEncoder().encode("quadrangular-pampulha:" + senha);
+            const buf = await crypto.subtle.digest("SHA-256", dados);
+            const hash = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+            if (hash === "5b3c3c63c0daf41ef103f77095ff3e13e0d22820831fe8611063006e59f99a4b") {
+                switchView('admin');
+            } else {
+                alert("Senha incorreta!");
+            }
+        }
 
         function logoutAdmin() { switchView('portal'); }
 
         function switchAdminTab(tab) {
-            ['adminTabVisitantes', 'adminTabTestemunhos', 'adminTabAgenda', 'adminTabDestaque'].forEach(id => {
+            ['adminTabVisitantes', 'adminTabTestemunhos', 'adminTabRsvp', 'adminTabAgenda', 'adminTabDestaque'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
-            ['tabVisBtn', 'tabTestBtn', 'tabAgendaBtn', 'tabDestBtn'].forEach(id => {
+            ['tabVisBtn', 'tabTestBtn', 'tabRsvpBtn', 'tabAgendaBtn', 'tabDestBtn'].forEach(id => {
                 document.getElementById(id).className = "px-4 py-2.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap";
             });
 
@@ -970,6 +1101,9 @@
             } else if (tab === 'testemunhos') {
                 document.getElementById('adminTabTestemunhos').classList.remove('hidden');
                 document.getElementById('tabTestBtn').className = "px-4 py-2.5 text-xs font-bold rounded-xl bg-amber-500 text-slate-950 transition whitespace-nowrap";
+            } else if (tab === 'rsvp') {
+                document.getElementById('adminTabRsvp').classList.remove('hidden');
+                document.getElementById('tabRsvpBtn').className = "px-4 py-2.5 text-xs font-bold rounded-xl bg-ieq-green text-slate-950 transition whitespace-nowrap";
             } else if (tab === 'agenda') {
                 document.getElementById('adminTabAgenda').classList.remove('hidden');
                 document.getElementById('tabAgendaBtn').className = "px-4 py-2.5 text-xs font-bold rounded-xl bg-ieq-orange text-white transition whitespace-nowrap";
@@ -981,10 +1115,15 @@
 
         async function salvarVisitanteFirebase(e) {
             e.preventDefault();
+            const comQuem = document.getElementById('visComQuem').value;
+            const qtdPessoas = (comQuem === 'Família' || comQuem === 'Amigos') ? parseInt(document.getElementById('visQtdPessoas').value || 1) : 1;
+
             const novo = {
                 nome: document.getElementById('visNome').value,
                 whatsapp: document.getElementById('visWhatsapp').value,
                 tipo: document.getElementById('visTipo').value,
+                comQuem: comQuem,
+                qtdPessoas: qtdPessoas,
                 queroGrupo: document.getElementById('visQueroGrupo').checked,
                 pedido: document.getElementById('visPedido').value || "Nenhum pedido",
                 data: new Date().toLocaleDateString('pt-BR')
@@ -992,15 +1131,18 @@
             try {
                 await window.addDoc(window.collection(window.dbFirestore, "visitantes"), novo);
                 document.getElementById('formVisitante').reset();
+                document.getElementById('divQtdAcompanhantes').classList.add('hidden');
                 mostrarToast("Seja bem-vindo(a)! Dados enviados com sucesso.");
             } catch (err) { alert("Erro ao salvar dados."); }
         }
 
         async function salvarTestemunhoFirebase(e) {
             e.preventDefault();
+            const opcaoSelecionada = document.querySelector('input[name="testOpcao"]:checked').value;
             const novo = {
                 nome: document.getElementById('testNome').value,
                 texto: document.getElementById('testTexto').value,
+                opcao: opcaoSelecionada,
                 data: new Date().toLocaleDateString('pt-BR')
             };
             try {
@@ -1008,6 +1150,22 @@
                 document.getElementById('formTestemunho').reset();
                 mostrarToast("Testemunho enviado com sucesso!");
             } catch (err) { alert("Erro ao enviar."); }
+        }
+
+        async function salvarRsvpFirebase(e) {
+            e.preventDefault();
+            const novo = {
+                nome: document.getElementById('rsvpNome').value,
+                whatsapp: document.getElementById('rsvpWhatsapp').value,
+                totalPessoas: parseInt(document.getElementById('rsvpTotalPessoas').value || 1),
+                obs: document.getElementById('rsvpObs').value || "Nenhuma",
+                data: new Date().toLocaleDateString('pt-BR')
+            };
+            try {
+                await window.addDoc(window.collection(window.dbFirestore, "rsvp_evento"), novo);
+                fecharModalRsvp();
+                mostrarToast("Presença confirmada com sucesso!");
+            } catch (err) { alert("Erro ao confirmar presença."); }
         }
 
         async function adicionarEventoAgenda(e) {
@@ -1042,6 +1200,12 @@
                 mostrarToast("Removido.");
             }
         }
+        async function removerRsvp(id) {
+            if(confirm("Remover confirmação?")) {
+                await window.deleteDoc(window.doc(window.dbFirestore, "rsvp_evento", id));
+                mostrarToast("Removido.");
+            }
+        }
         async function removerEventoAgenda(id) {
             if(confirm("Remover evento?")) {
                 await window.deleteDoc(window.doc(window.dbFirestore, "agenda", id));
@@ -1060,6 +1224,7 @@
                 linkFb: document.getElementById('admAoVivoFb').value,
                 natalAtivo: document.getElementById('admNatalCheck').checked,
                 ativo: document.getElementById('admDestAtivo').checked,
+                rsvpAtivo: document.getElementById('admRsvpCheck').checked,
                 titulo: document.getElementById('admDestTitulo').value,
                 imagem: imgFinal,
                 dataHora: document.getElementById('admDestData').value,
@@ -1075,14 +1240,16 @@
         }
 
         window.renderizarVisitantesAdmin = function(visitantes) {
-            document.getElementById('statVisitantes').innerText = visitantes.length;
+            // Calcular total real de visitantes considerando acompanhantes
+            const totalPessoasMes = visitantes.reduce((acc, v) => acc + (v.qtdPessoas || 1), 0);
+            document.getElementById('statVisitantes').innerText = totalPessoasMes;
             document.getElementById('statGrupoWhats').innerText = visitantes.filter(v => v.queroGrupo).length;
             document.getElementById('statOracoes').innerText = visitantes.filter(v => v.pedido && v.pedido !== "Nenhum pedido").length;
 
             document.getElementById('listaVisitantesAdmin').innerHTML = visitantes.map(v => `
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex justify-between items-start">
                     <div>
-                        <h4 class="font-bold text-sm text-slate-900">${v.nome}</h4>
+                        <h4 class="font-bold text-sm text-slate-900">${v.nome} <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full ml-2"> Veio com: ${v.comQuem || 'Sozinha(o)'} (${v.qtdPessoas || 1} pes.)</span></h4>
                         <p class="text-xs text-slate-500">${v.whatsapp} • ${v.tipo}</p>
                         <p class="text-xs text-slate-700 italic mt-1">"${v.pedido}"</p>
                     </div>
@@ -1095,12 +1262,28 @@
             document.getElementById('listaTestemunhosAdmin').innerHTML = testemunhos.map(t => `
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex justify-between items-start">
                     <div>
-                        <h4 class="font-bold text-sm text-slate-900">${t.nome}</h4>
+                        <h4 class="font-bold text-sm text-slate-900">${t.nome} <span class="text-[10px] bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full font-bold ml-2">${t.opcao || 'Não especificado'}</span></h4>
                         <p class="text-xs text-slate-800 mt-1 font-medium">"${t.texto}"</p>
                     </div>
                     <button onclick="removerTestemunho('${t.id}')" class="bg-red-100 text-red-600 p-2 rounded-xl text-xs"><i class="fa-solid fa-trash"></i></button>
                 </div>
             `).join('') || '<p class="text-xs text-slate-400 italic">Nenhum testemunho.</p>';
+        };
+
+        window.renderizarRsvpAdmin = function(listaRsvp) {
+            const totalPessoasRsvp = listaRsvp.reduce((acc, r) => acc + (r.totalPessoas || 1), 0);
+            document.getElementById('statTotalRsvpPessoas').innerText = totalPessoasRsvp;
+
+            document.getElementById('listaRsvpAdmin').innerHTML = listaRsvp.map(r => `
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex justify-between items-start">
+                    <div>
+                        <h4 class="font-bold text-sm text-slate-900">${r.nome} <span class="bg-ieq-green/20 text-ieq-darkGreen text-xs px-2.5 py-0.5 rounded-full font-black ml-2">${r.totalPessoas || 1} pessoa(s)</span></h4>
+                        <p class="text-xs text-slate-500">${r.whatsapp} • Data: ${r.data}</p>
+                        <p class="text-xs text-slate-700 italic mt-1">Obs: ${r.obs}</p>
+                    </div>
+                    <button onclick="removerRsvp('${r.id}')" class="bg-red-100 text-red-600 p-2 rounded-xl text-xs"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('') || '<p class="text-xs text-slate-400 italic">Nenhuma confirmação de presença registrada.</p>';
         };
 
         window.renderizarAgendaGeral = function(agenda) {
@@ -1130,6 +1313,6 @@
             `).join('') || '<p class="text-xs text-slate-400 italic">Nenhum evento.</p>';
         };
     </script>
-       <link rel="stylesheet" href="tema.css">
+    <link rel="stylesheet" href="tema.css">
 </body>
 </html>
