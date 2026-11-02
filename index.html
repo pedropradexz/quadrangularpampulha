@@ -15,7 +15,7 @@
                             green: '#70cc3b',
                             greenHover: '#5cb32b',
                             darkGreen: '#234a11',
-                            cream: '#f8faf6',
+                            cream: '#f4f7f2',
                             card: '#ffffff',
                             orange: '#ff8800',
                             red: '#c53030',
@@ -59,12 +59,11 @@
         window.addDoc = addDoc;
         window.deleteDoc = deleteDoc;
 
-        // Escutar status do CULTO AO VIVO, EVENTO DESTAQUE e NATAL FELIZ AO VIVO
+        // Escutar configurações ao vivo
         onSnapshot(doc(db, "configuracoes", "destaque"), (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
                 
-                // Controle de Ao Vivo
                 const bannerAoVivo = document.getElementById('bannerAoVivo');
                 if (data.aoVivo === true) {
                     bannerAoVivo.classList.remove('hidden');
@@ -73,17 +72,14 @@
                 }
                 document.getElementById('admAoVivoCheck').checked = data.aoVivo === true;
 
-                // Atualizar links das transmissões ao vivo
                 const defaultYtb = "https://www.youtube.com/@QuadrangularPampulhaAgudosSP";
                 const defaultFb = "https://www.facebook.com/QuadrangularPampulhaAgudos?locale=pt_BR";
 
                 document.getElementById('btnLiveYtb').href = data.linkYtb || defaultYtb;
                 document.getElementById('btnLiveFb').href = data.linkFb || defaultFb;
-
                 document.getElementById('admAoVivoYtb').value = data.linkYtb || '';
                 document.getElementById('admAoVivoFb').value = data.linkFb || '';
 
-                // Controle do Natal Feliz
                 const secNatalCard = document.getElementById('secaoNatalFelizCard');
                 const btnNavNatal = document.getElementById('navNatal');
                 
@@ -96,19 +92,20 @@
                 }
                 document.getElementById('admNatalCheck').checked = data.natalAtivo !== false;
 
-                // Controle de Evento Destaque
                 const containerDestaque = document.getElementById('cardDestaqueContainer');
-                if (data.ativo === false) {
-                    containerDestaque.classList.add('hidden');
-                } else {
-                    containerDestaque.classList.remove('hidden');
+                if (containerDestaque) {
+                    if (data.ativo === false) {
+                        containerDestaque.classList.add('hidden');
+                    } else {
+                        containerDestaque.classList.remove('hidden');
+                    }
                 }
 
-                document.getElementById('destaqueTitulo').innerText = data.titulo || '';
-                document.getElementById('destaqueImagem').src = data.imagem || '';
-                document.getElementById('destaqueDesc').innerText = data.desc || '';
-                document.getElementById('destaqueDataHora').innerText = data.dataHora || '';
-                document.getElementById('destaqueLocal').innerText = data.local || '';
+                if(document.getElementById('destaqueTitulo')) document.getElementById('destaqueTitulo').innerText = data.titulo || '';
+                if(document.getElementById('destaqueImagem')) document.getElementById('destaqueImagem').src = data.imagem || '';
+                if(document.getElementById('destaqueDesc')) document.getElementById('destaqueDesc').innerText = data.desc || '';
+                if(document.getElementById('destaqueDataHora')) document.getElementById('destaqueDataHora').innerText = data.dataHora || '';
+                if(document.getElementById('destaqueLocal')) document.getElementById('destaqueLocal').innerText = data.local || '';
 
                 document.getElementById('admDestAtivo').checked = data.ativo !== false;
                 document.getElementById('admDestTitulo').value = data.titulo || '';
@@ -120,30 +117,21 @@
             }
         });
 
-        // Escutar Visitantes Cadastrados AO VIVO
         onSnapshot(collection(db, "visitantes"), (snapshot) => {
             const lista = [];
-            snapshot.forEach((doc) => {
-                lista.push({ id: doc.id, ...doc.data() });
-            });
+            snapshot.forEach((doc) => { lista.push({ id: doc.id, ...doc.data() }); });
             window.renderizarVisitantesAdmin(lista);
         });
 
-        // Escutar Testemunhos AO VIVO
         onSnapshot(collection(db, "testemunhos"), (snapshot) => {
             const listaTest = [];
-            snapshot.forEach((doc) => {
-                listaTest.push({ id: doc.id, ...doc.data() });
-            });
+            snapshot.forEach((doc) => { listaTest.push({ id: doc.id, ...doc.data() }); });
             window.renderizarTestemunhosAdmin(listaTest);
         });
 
-        // Escutar Agenda do Mês AO VIVO
         onSnapshot(collection(db, "agenda"), (snapshot) => {
             const listaAgenda = [];
-            snapshot.forEach((doc) => {
-                listaAgenda.push({ id: doc.id, ...doc.data() });
-            });
+            snapshot.forEach((doc) => { listaAgenda.push({ id: doc.id, ...doc.data() }); });
             window.renderizarAgendaGeral(listaAgenda);
         });
     </script>
@@ -157,450 +145,415 @@
         .quadrangular-gradient {
             background: linear-gradient(135deg, #c53030 0%, #d69e2e 33%, #2b6cb0 66%, #6b46c1 100%);
         }
+        .quadrangular-border {
+            border-image: linear-gradient(to right, #c53030, #d69e2e, #2b6cb0, #6b46c1) 1;
+        }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="bg-ieq-cream text-slate-800 min-h-screen flex flex-col">
 
-    <!-- Topo / Cabeçalho com Navegação por Abas Responsiva -->
-    <header class="bg-white border-b border-slate-200/80 sticky top-0 z-50 shadow-sm">
-        <div class="max-w-3xl mx-auto px-4 py-2.5 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+    <!-- Topo / Cabeçalho Fixo Widescreen -->
+    <header class="bg-white/95 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-col md:flex-row md:justify-between md:items-center gap-3">
             
-            <div class="flex items-center justify-between w-full sm:w-auto">
-                <div class="flex items-center space-x-2.5 cursor-pointer" onclick="switchView('portal')">
-                    <img src="logo.jpg" onerror="this.src='271209529_3244963695727261_483985416568424838_n.jpg'" alt="Logo Quadrangular Pampulha" class="w-9 h-9 rounded-xl object-cover shadow-sm border border-slate-100">
+            <div class="flex items-center justify-between w-full md:w-auto">
+                <div class="flex items-center space-x-3 cursor-pointer group" onclick="switchView('portal')">
+                    <img src="logo.jpg" onerror="this.src='271209529_3244963695727261_483985416568424838_n.jpg'" alt="Logo Quadrangular Pampulha" class="w-10 h-10 rounded-2xl object-cover shadow-md border-2 border-slate-100 group-hover:scale-105 transition">
                     <div>
-                        <h1 class="font-bold text-sm text-slate-900 leading-tight">Quadrangular Pampulha</h1>
-                        <p class="text-[10px] sm:text-[11px] text-slate-500 font-medium">3ª IEQ Agudos - SP</p>
+                        <h1 class="font-extrabold text-sm sm:text-base text-slate-900 leading-tight">Quadrangular Pampulha</h1>
+                        <p class="text-[11px] text-slate-500 font-semibold tracking-wide">3ª IEQ Agudos • SP</p>
                     </div>
                 </div>
             </div>
             
-            <!-- Botões das Abas no Topo -->
-            <div class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar py-1 w-full sm:w-auto shrink-0">
-                <button onclick="switchView('portal')" id="navPortal" class="px-3 py-1.5 text-[11px] sm:text-xs font-bold rounded-full bg-ieq-green text-slate-950 shadow-sm transition whitespace-nowrap shrink-0">
-                    <i class="fa-solid fa-house mr-1"></i> Início
+            <!-- Navegação por Abas Responsiva -->
+            <div class="flex items-center space-x-2 overflow-x-auto no-scrollbar py-1 w-full md:w-auto shrink-0">
+                <button onclick="switchView('portal')" id="navPortal" class="px-4 py-2 text-xs font-bold rounded-full bg-ieq-green text-slate-950 shadow-sm transition whitespace-nowrap shrink-0 flex items-center gap-1.5">
+                    <i class="fa-solid fa-house"></i> Início
                 </button>
-                <button onclick="switchView('quadrangular')" id="navQuadrangular" class="px-3 py-1.5 text-[11px] sm:text-xs font-black rounded-full quadrangular-gradient text-white shadow-sm transition whitespace-nowrap shrink-0">
-                    <i class="fa-solid fa-cross mr-1"></i> Mês Quadrangular
+                <button onclick="switchView('quadrangular')" id="navQuadrangular" class="px-4 py-2 text-xs font-black rounded-full quadrangular-gradient text-white shadow-md transition whitespace-nowrap shrink-0 flex items-center gap-1.5 animate-pulse">
+                    <i class="fa-solid fa-flag"></i> Mês Quadrangular 🟥🟨🟦🟪
                 </button>
-                <button onclick="switchView('natal')" id="navNatal" class="px-3 py-1.5 text-[11px] sm:text-xs font-extrabold rounded-full gold-brush text-slate-950 shadow-sm transition whitespace-nowrap shrink-0">
-                    <i class="fa-solid fa-gift mr-1"></i> 5º Natal Feliz
+                <button onclick="switchView('natal')" id="navNatal" class="px-4 py-2 text-xs font-extrabold rounded-full gold-brush text-slate-950 shadow-sm transition whitespace-nowrap shrink-0 flex items-center gap-1.5">
+                    <i class="fa-solid fa-gift"></i> 5º Natal Feliz
                 </button>
-                <button onclick="switchView('visitante')" id="navVisitante" class="px-3 py-1.5 text-[11px] sm:text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap shrink-0">
-                    <i class="fa-solid fa-heart mr-1 text-ieq-green"></i> Visitante
+                <button onclick="switchView('visitante')" id="navVisitante" class="px-4 py-2 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap shrink-0 flex items-center gap-1.5">
+                    <i class="fa-solid fa-heart text-ieq-green"></i> Visitante
                 </button>
-                <button onclick="switchView('testemunho')" id="navTestemunho" class="px-3 py-1.5 text-[11px] sm:text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap shrink-0">
-                    <i class="fa-solid fa-hands-clapping mr-1 text-amber-500"></i> Testemunhos
+                <button onclick="switchView('testemunho')" id="navTestemunho" class="px-4 py-2 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap shrink-0 flex items-center gap-1.5">
+                    <i class="fa-solid fa-hands-clapping text-amber-500"></i> Testemunhos
                 </button>
-                <button onclick="checkAdminAccess()" id="navAdmin" class="px-3 py-1.5 text-[11px] sm:text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap shrink-0">
-                    <i class="fa-solid fa-lock mr-1"></i> Admin
+                <button onclick="checkAdminAccess()" id="navAdmin" class="px-4 py-2 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap shrink-0 flex items-center gap-1.5">
+                    <i class="fa-solid fa-lock"></i> Admin
                 </button>
             </div>
         </div>
     </header>
 
     <!-- BANNER DE CULTO AO VIVO -->
-    <div id="bannerAoVivo" class="hidden bg-red-600 text-white py-2.5 px-4 text-xs font-bold text-center flex flex-wrap items-center justify-center gap-2.5 shadow-inner">
+    <div id="bannerAoVivo" class="hidden bg-red-600 text-white py-3 px-4 text-xs font-extrabold text-center flex flex-wrap items-center justify-center gap-3 shadow-md z-40">
         <div class="flex items-center gap-2">
-            <span class="relative flex h-3 w-3">
+            <span class="relative flex h-3.5 w-3.5">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-white"></span>
             </span>
-            <span>ESTAMOS AO VIVO! Acompanhe o Culto:</span>
+            <span>ESTAMOS AO VIVO AGORA! Acompanhe o Culto:</span>
         </div>
         <div class="flex items-center gap-2">
-            <a id="btnLiveYtb" href="https://www.youtube.com/@QuadrangularPampulhaAgudosSP" target="_blank" class="bg-white text-red-600 hover:bg-slate-100 px-3 py-1 rounded-full font-extrabold text-[11px] transition shadow-sm inline-flex items-center gap-1.5">
+            <a id="btnLiveYtb" href="https://www.youtube.com/@QuadrangularPampulhaAgudosSP" target="_blank" class="bg-white text-red-600 hover:bg-slate-100 px-3.5 py-1 rounded-full font-black text-xs transition shadow-sm inline-flex items-center gap-1.5">
                 <i class="fa-brands fa-youtube text-sm"></i> YouTube
             </a>
-            <a id="btnLiveFb" href="https://www.facebook.com/QuadrangularPampulhaAgudos?locale=pt_BR" target="_blank" class="bg-blue-900 text-white hover:bg-blue-950 px-3 py-1 rounded-full font-extrabold text-[11px] transition shadow-sm inline-flex items-center gap-1.5">
+            <a id="btnLiveFb" href="https://www.facebook.com/QuadrangularPampulhaAgudos?locale=pt_BR" target="_blank" class="bg-blue-900 text-white hover:bg-blue-950 px-3.5 py-1 rounded-full font-black text-xs transition shadow-sm inline-flex items-center gap-1.5">
                 <i class="fa-brands fa-facebook-f text-xs"></i> Facebook
             </a>
         </div>
     </div>
 
-    <!-- Conteúdo Principal -->
-    <main class="flex-grow max-w-3xl w-full mx-auto p-4 pb-16 space-y-5">
+    <!-- Conteúdo Principal Widescreen -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
 
-        <!-- ================= ABA 1: INÍCIO / PROGRAMAÇÃO ================= -->
-        <div id="viewPortal" class="space-y-5">
+        <!-- ================= ABA 1: INÍCIO / HOME DECORADA ================= -->
+        <div id="viewPortal" class="space-y-6">
             
-            <!-- DESTAQUE DO MÊS QUADRANGULAR NA TELA INICIAL -->
-            <div onclick="switchView('quadrangular')" class="quadrangular-gradient text-white p-5 rounded-3xl shadow-lg border border-white/20 flex flex-col sm:flex-row justify-between items-center gap-4 cursor-pointer hover:opacity-95 transition relative overflow-hidden">
-                <div class="space-y-1.5 text-center sm:text-left z-10">
-                    <span class="bg-white/25 text-white text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider inline-block">
-                        <i class="fa-solid fa-flag mr-1"></i> Novembro Festivo • 75 Anos
+            <!-- Hero Banner Decorado do Mês Quadrangular -->
+            <div onclick="switchView('quadrangular')" class="quadrangular-gradient text-white p-6 sm:p-10 rounded-3xl shadow-xl border-4 border-white/30 flex flex-col md:flex-row justify-between items-center gap-6 cursor-pointer hover:scale-[1.01] transition duration-300 relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="space-y-3 text-center md:text-left z-10 max-w-2xl">
+                    <span class="bg-white/25 text-white text-xs font-black px-4 py-1.5 rounded-full uppercase tracking-wider inline-flex items-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-flag text-amber-300"></i> Novembro Festivo • 75 Anos de História
                     </span>
-                    <h3 class="text-xl sm:text-2xl font-black drop-shadow-md">Novembro: Mês Quadrangular! 🟥🟨🟦🟪</h3>
-                    <p class="text-xs text-white/90 font-medium">Celebre a identidade, a unidade e o evangelho completo de Cristo conosco.</p>
+                    <h2 class="text-3xl sm:text-5xl font-black drop-shadow-lg tracking-tight">Mês Quadrangular 🟥🟨🟦🟪</h2>
+                    <p class="text-sm sm:text-base text-white/95 font-medium leading-relaxed">
+                        Celebre conosco a mensagem do Evangelho Quadrangular: Jesus Salva, Batiza com o Espírito Santo, Cura e Voltará. Clique para ver a programação completa e a identidade visual oficial!
+                    </p>
                 </div>
-                <button class="bg-white text-slate-900 font-extrabold px-4 py-2.5 rounded-2xl text-xs transition shadow-md whitespace-nowrap flex items-center gap-1.5 shrink-0 z-10">
-                    Ver Programação <i class="fa-solid fa-arrow-right"></i>
+                <button class="bg-white hover:bg-slate-100 text-slate-950 font-black px-6 py-3.5 rounded-2xl text-xs sm:text-sm transition shadow-lg whitespace-nowrap flex items-center gap-2 shrink-0 z-10">
+                    Acessar Página do Mês <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
 
-            <!-- Box Principal na Tela Inicial -->
-            <div class="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-sm text-center relative overflow-hidden">
-                <div class="inline-flex items-center gap-1.5 bg-ieq-green/15 text-ieq-darkGreen text-xs px-3 py-1 rounded-full font-bold mb-3">
-                    <i class="fa-solid fa-church text-ieq-green"></i> Pastor José Jaime
-                </div>
-                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 mb-2">Que alegria ter você aqui! 🙏</h2>
-                <p class="text-slate-600 text-xs sm:text-sm max-w-md mx-auto mb-5 leading-relaxed">
-                    Seja muito bem-vindo à <strong>Quadrangular Pampulha</strong> (3ª IEQ Agudos).
-                </p>
-                <div class="flex justify-center gap-2.5 flex-wrap">
-                    <button onclick="switchView('visitante')" class="bg-ieq-green hover:bg-ieq-greenHover text-slate-950 text-xs font-bold px-4 py-2.5 rounded-2xl shadow-sm transition flex items-center">
-                        <i class="fa-solid fa-user-plus mr-1.5"></i> Sou Visitante / Quero me Conectar
-                    </button>
-                    <a href="#secao-pix" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-2xl shadow-sm transition flex items-center">
-                        <i class="fa-solid fa-hand-holding-dollar mr-1.5 text-ieq-green"></i> Dízimos & Ofertas
-                    </a>
-                </div>
-            </div>
-
-            <!-- CARD DO NATAL FELIZ NA TELA INICIAL -->
-            <div id="secaoNatalFelizCard" class="bg-gradient-to-r from-slate-950 via-slate-900 to-amber-950 text-white p-5 rounded-3xl shadow-lg border border-amber-500/30 flex flex-col sm:flex-row justify-between items-center gap-4 relative overflow-hidden">
-                <div class="space-y-1.5 text-center sm:text-left">
-                    <div class="inline-flex items-center gap-1.5 gold-brush text-slate-950 text-[10px] font-black px-3 py-0.5 rounded-full uppercase tracking-wider">
-                        <i class="fa-solid fa-star"></i> Ação Social • 5ª Edição
-                    </div>
-                    <h3 class="text-2xl sm:text-3xl text-amber-300 font-natal drop-shadow">5º Natal Feliz</h3>
-                    <p class="text-xs text-slate-300 italic">"Quanto for possível, não deixe de fazer o bem a quem dele precisa." (Pv 3:27)</p>
-                </div>
-                <button onclick="switchView('natal')" class="gold-brush hover:opacity-90 text-slate-950 font-black px-5 py-2.5 rounded-2xl text-xs transition shadow-md whitespace-nowrap flex items-center gap-2 shrink-0">
-                    <i class="fa-solid fa-gift"></i> Conhecer o Projeto e Doar 🎁
-                </button>
-            </div>
-
-            <!-- CARD DE EVENTO EM DESTAQUE -->
-            <div id="cardDestaqueContainer" class="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
-                <div class="relative h-44 sm:h-56 w-full bg-slate-100">
-                    <img id="destaqueImagem" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1000&q=80" alt="Evento em Destaque" class="w-full h-full object-cover">
-                    <div class="absolute top-3 left-3 bg-ieq-orange text-white text-[11px] font-extrabold px-3 py-1 rounded-full shadow-md uppercase tracking-wider flex items-center gap-1">
-                        <i class="fa-solid fa-star"></i> Próximo Evento
-                    </div>
-                </div>
-                <div class="p-4 sm:p-5 space-y-2">
-                    <h3 id="destaqueTitulo" class="font-extrabold text-slate-900 text-base sm:text-xl">Grande Culto do Mês Quadrangular</h3>
-                    <p id="destaqueDesc" class="text-xs sm:text-sm text-slate-600 leading-relaxed">Venha celebrar conosco os 75 anos da nossa igreja com muita alegria e comunhão.</p>
+            <!-- Grid Widescreen para Organizar o Espaço -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Coluna Principal Esquerda (2/3 da largura em telas grandes) -->
+                <div class="lg:col-span-2 space-y-6">
                     
-                    <div class="pt-2 flex flex-wrap items-center gap-2.5 text-xs font-semibold text-slate-700 border-t border-slate-100">
-                        <div class="flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-xl">
-                            <i class="fa-regular fa-calendar text-ieq-green"></i>
-                            <span id="destaqueDataHora">Domingo às 09h e 18h30</span>
-                        </div>
-                        <div class="flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-xl">
-                            <i class="fa-solid fa-location-dot text-red-500"></i>
-                            <span id="destaqueLocal">Templo Principal - IEQ Pampulha</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- AGENDA DE EVENTOS DO MÊS -->
-            <div class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/80 shadow-sm space-y-3">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 rounded-lg bg-ieq-orange/20 text-ieq-orange flex items-center justify-center font-bold text-sm">
-                            <i class="fa-regular fa-calendar-check"></i>
-                        </div>
+                    <!-- Box Boas-Vindas Pastor -->
+                    <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-sm relative overflow-hidden flex flex-col justify-between">
                         <div>
-                            <h3 class="font-bold text-slate-900 text-sm">Agenda do Mês</h3>
-                            <p class="text-xs text-slate-400">Marque na sua agenda e participe!</p>
+                            <div class="inline-flex items-center gap-2 bg-ieq-green/15 text-ieq-darkGreen text-xs px-3.5 py-1.5 rounded-full font-bold mb-4">
+                                <i class="fa-solid fa-church text-ieq-green"></i> Pastor José Jaime • 3ª IEQ Agudos
+                            </div>
+                            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-3">Que alegria ter você aqui conosco! 🙏</h2>
+                            <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-6">
+                                Seja muito bem-vindo à <strong>Quadrangular Pampulha</strong>. Se você escaneou o QR Code da cadeira, utilize nossa aba de visitantes para se conectar e receber oração!
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-3">
+                            <button onclick="switchView('visitante')" class="bg-ieq-green hover:bg-ieq-greenHover text-slate-950 text-xs sm:text-sm font-bold px-5 py-3 rounded-2xl shadow-sm transition flex items-center gap-2">
+                                <i class="fa-solid fa-user-plus"></i> Sou Visitante / Conectar-me
+                            </button>
+                            <a href="#secao-pix" class="bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold px-5 py-3 rounded-2xl shadow-sm transition flex items-center gap-2">
+                                <i class="fa-solid fa-hand-holding-dollar text-ieq-green"></i> Dízimos & Ofertas PIX
+                            </a>
                         </div>
                     </div>
+
+                    <!-- Card Natal Feliz -->
+                    <div id="secaoNatalFelizCard" class="bg-gradient-to-r from-slate-950 via-slate-900 to-amber-950 text-white p-6 sm:p-8 rounded-3xl shadow-lg border-2 border-amber-500/40 flex flex-col sm:flex-row justify-between items-center gap-6 relative overflow-hidden">
+                        <div class="space-y-2 text-center sm:text-left">
+                            <div class="inline-flex items-center gap-1.5 gold-brush text-slate-950 text-xs font-black px-3.5 py-1 rounded-full uppercase tracking-wider">
+                                <i class="fa-solid fa-star"></i> Ação Social • 5ª Edição
+                            </div>
+                            <h3 class="text-3xl sm:text-4xl text-amber-300 font-natal drop-shadow">5º Natal Feliz</h3>
+                            <p class="text-xs sm:text-sm text-slate-300 italic max-w-md">"Quanto for possível, não deixe de fazer o bem a quem dele precisa." (Provérbios 3:27)</p>
+                        </div>
+                        <button onclick="switchView('natal')" class="gold-brush hover:opacity-90 text-slate-950 font-black px-6 py-3.5 rounded-2xl text-xs sm:text-sm transition shadow-md whitespace-nowrap flex items-center gap-2 shrink-0">
+                            <i class="fa-solid fa-gift"></i> Conhecer Projeto e Doar 🎁
+                        </button>
+                    </div>
+
+                    <!-- Agenda do Mês -->
+                    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-xl bg-ieq-orange/20 text-ieq-orange flex items-center justify-center font-bold text-base">
+                                    <i class="fa-regular fa-calendar-check"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-extrabold text-slate-900 text-base">Agenda do Mês em Destaque</h3>
+                                    <p class="text-xs text-slate-400">Confira os eventos e cultos especiais</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="containerAgendaPublica" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <p class="text-xs text-slate-400 italic col-span-2">A carregar eventos da agenda...</p>
+                        </div>
+                    </div>
+
                 </div>
 
-                <div id="containerAgendaPublica" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    <p class="text-xs text-slate-400 italic col-span-2">A carregar eventos da agenda...</p>
+                <!-- Coluna Lateral Direita (1/3 da largura em telas grandes) -->
+                <div class="space-y-6">
+                    
+                    <!-- Evento em Destaque -->
+                    <div id="cardDestaqueContainer" class="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col">
+                        <div class="relative h-48 sm:h-52 w-full bg-slate-100">
+                            <img id="destaqueImagem" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1000&q=80" alt="Evento em Destaque" class="w-full h-full object-cover">
+                            <div class="absolute top-3 left-3 bg-ieq-orange text-white text-[11px] font-extrabold px-3 py-1 rounded-full shadow-md uppercase tracking-wider flex items-center gap-1">
+                                <i class="fa-solid fa-star"></i> Próximo Culto
+                            </div>
+                        </div>
+                        <div class="p-5 space-y-3 flex-grow flex flex-col justify-between">
+                            <div class="space-y-2">
+                                <h3 id="destaqueTitulo" class="font-extrabold text-slate-900 text-lg">Grande Culto do Mês Quadrangular</h3>
+                                <p id="destaqueDesc" class="text-xs text-slate-600 leading-relaxed">Celebração especial de 75 anos com louvor, palavra e comunhão.</p>
+                            </div>
+                            
+                            <div class="pt-3 space-y-2 text-xs font-semibold text-slate-700 border-t border-slate-100">
+                                <div class="flex items-center gap-2 bg-slate-50 p-2.5 rounded-xl">
+                                    <i class="fa-regular fa-calendar text-ieq-green"></i>
+                                    <span id="destaqueDataHora">Domingo às 09h e 18h30</span>
+                                </div>
+                                <div class="flex items-center gap-2 bg-slate-50 p-2.5 rounded-xl">
+                                    <i class="fa-solid fa-location-dot text-red-500"></i>
+                                    <span id="destaqueLocal">Templo Principal - IEQ Pampulha</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Programação Semanal Compacta -->
+                    <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-4">
+                        <div class="flex items-center space-x-3 border-b border-slate-100 pb-3">
+                            <div class="w-9 h-9 rounded-xl bg-ieq-green/20 text-ieq-darkGreen flex items-center justify-center font-bold text-sm">
+                                <i class="fa-regular fa-calendar-days"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-900 text-sm">Horários dos Cultos</h3>
+                                <p class="text-[11px] text-slate-400">Venha cultuar conosco</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2.5 text-xs">
+                            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex justify-between items-center">
+                                <span class="font-bold text-slate-900">Domingo (Escola Bíblica)</span>
+                                <span class="font-extrabold bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full">09h00</span>
+                            </div>
+                            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex justify-between items-center">
+                                <span class="font-bold text-slate-900">Domingo (Culto da Família)</span>
+                                <span class="font-extrabold bg-ieq-green/20 text-ieq-darkGreen px-2.5 py-1 rounded-full">18h30</span>
+                            </div>
+                            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex justify-between items-center">
+                                <span class="font-bold text-slate-900">Quarta (Culto da Vitória)</span>
+                                <span class="font-extrabold bg-ieq-green/20 text-ieq-darkGreen px-2.5 py-1 rounded-full">20h00</span>
+                            </div>
+                            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex justify-between items-center">
+                                <span class="font-bold text-slate-900">Sexta (Culto dos Milagres)</span>
+                                <span class="font-extrabold bg-ieq-green/20 text-ieq-darkGreen px-2.5 py-1 rounded-full">20h00</span>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
+
             </div>
 
-            <!-- Redes Sociais Oficiais -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
-                <a href="https://www.instagram.com/quadrangularpampulha/" target="_blank" class="bg-white hover:bg-slate-50 p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-sm text-center transition flex flex-col items-center group">
-                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center mb-1.5 group-hover:scale-110 transition">
-                        <i class="fa-brands fa-instagram text-lg sm:text-xl"></i>
+            <!-- Redes Sociais Widescreen Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <a href="https://www.instagram.com/quadrangularpampulha/" target="_blank" class="bg-white hover:bg-slate-50 p-5 rounded-3xl border border-slate-200/80 shadow-sm text-center transition flex flex-col items-center group">
+                    <div class="w-12 h-12 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center mb-2 group-hover:scale-110 transition shadow-inner">
+                        <i class="fa-brands fa-instagram text-xl"></i>
                     </div>
                     <span class="text-xs font-bold text-slate-800">Instagram</span>
                     <span class="text-[10px] text-slate-400">@quadrangularpampulha</span>
                 </a>
 
-                <a href="https://www.facebook.com/QuadrangularPampulhaAgudos?locale=pt_BR" target="_blank" class="bg-white hover:bg-slate-50 p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-sm text-center transition flex flex-col items-center group">
-                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-1.5 group-hover:scale-110 transition">
-                        <i class="fa-brands fa-facebook-f text-base sm:text-lg"></i>
+                <a href="https://www.facebook.com/QuadrangularPampulhaAgudos?locale=pt_BR" target="_blank" class="bg-white hover:bg-slate-50 p-5 rounded-3xl border border-slate-200/80 shadow-sm text-center transition flex flex-col items-center group">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-2 group-hover:scale-110 transition shadow-inner">
+                        <i class="fa-brands fa-facebook-f text-lg"></i>
                     </div>
                     <span class="text-xs font-bold text-slate-800">Facebook</span>
                     <span class="text-[10px] text-slate-400">Página Oficial</span>
                 </a>
 
-                <a href="https://www.youtube.com/@QuadrangularPampulhaAgudosSP" target="_blank" class="bg-white hover:bg-slate-50 p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-sm text-center transition flex flex-col items-center group">
-                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center mb-1.5 group-hover:scale-110 transition">
-                        <i class="fa-brands fa-youtube text-base sm:text-lg"></i>
+                <a href="https://www.youtube.com/@QuadrangularPampulhaAgudosSP" target="_blank" class="bg-white hover:bg-slate-50 p-5 rounded-3xl border border-slate-200/80 shadow-sm text-center transition flex flex-col items-center group">
+                    <div class="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mb-2 group-hover:scale-110 transition shadow-inner">
+                        <i class="fa-brands fa-youtube text-lg"></i>
                     </div>
                     <span class="text-xs font-bold text-slate-800">YouTube</span>
                     <span class="text-[10px] text-slate-400">Cultos Ao Vivo</span>
                 </a>
 
-                <a href="https://maps.google.com/?q=Av.+Antônio+Maria+dos+Santos+Escada,+87+-+Parque+Pampulha+Agudos" target="_blank" class="bg-white hover:bg-slate-50 p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-sm text-center transition flex flex-col items-center group">
-                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-1.5 group-hover:scale-110 transition">
-                        <i class="fa-solid fa-location-dot text-base sm:text-lg"></i>
+                <a href="https://maps.google.com/?q=Av.+Antônio+Maria+dos+Santos+Escada,+87+-+Parque+Pampulha+Agudos" target="_blank" class="bg-white hover:bg-slate-50 p-5 rounded-3xl border border-slate-200/80 shadow-sm text-center transition flex flex-col items-center group">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-2 group-hover:scale-110 transition shadow-inner">
+                        <i class="fa-solid fa-location-dot text-lg"></i>
                     </div>
                     <span class="text-xs font-bold text-slate-800">Localização</span>
                     <span class="text-[10px] text-slate-400">Como Chegar</span>
                 </a>
             </div>
 
-            <!-- Programação Semanal -->
-            <div class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/80 shadow-sm space-y-3">
-                <div class="flex items-center space-x-2 border-b border-slate-100 pb-3">
-                    <div class="w-8 h-8 rounded-lg bg-ieq-green/20 text-ieq-darkGreen flex items-center justify-center font-bold text-sm">
-                        <i class="fa-regular fa-calendar-days"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-slate-900 text-sm">Programação Semanal</h3>
-                        <p class="text-xs text-slate-400">Venha cultuar a Deus conosco na 3ª IEQ</p>
-                    </div>
-                </div>
-
-                <div class="space-y-2 text-sm">
-                    <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 space-y-2">
-                        <div class="flex justify-between items-center border-b border-slate-200/60 pb-1.5">
-                            <span class="font-bold text-slate-900 text-xs sm:text-sm">DOMINGO - Escola Bíblica</span>
-                            <span class="text-xs font-extrabold bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full">09h00</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="font-bold text-slate-900 text-xs sm:text-sm">DOMINGO - Culto da Família</span>
-                            <span class="text-xs font-extrabold bg-ieq-green/20 text-ieq-darkGreen px-2.5 py-0.5 rounded-full">18h30</span>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-100">
-                        <span class="font-bold text-slate-800 text-xs sm:text-sm">SEGUNDA - Oração</span>
-                        <span class="text-xs font-extrabold bg-blue-100 text-blue-800 px-2.5 py-0.5 rounded-full">19h00 às 19h45</span>
-                    </div>
-
-                    <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 space-y-2">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <span class="font-bold text-slate-900 text-xs sm:text-sm block">TERÇA-FEIRA - Reunião de Células</span>
-                                <span class="text-[11px] text-slate-500">Escolha a célula mais próxima de você!</span>
-                            </div>
-                            <span class="text-xs font-extrabold bg-ieq-orange/20 text-ieq-orange px-2.5 py-1 rounded-full whitespace-nowrap">20h00</span>
-                        </div>
-                        <button onclick="toggleCelulas()" class="w-full bg-ieq-orange/10 hover:bg-ieq-orange/20 text-ieq-orange text-xs font-bold py-2 rounded-xl border border-ieq-orange/30 transition flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-users"></i> Ver Endereço das Células <i id="iconSetaCelulas" class="fa-solid fa-chevron-down text-[10px]"></i>
-                        </button>
-                        
-                        <div id="listaCelulas" class="hidden pt-2 space-y-2 border-t border-slate-200/80">
-                            <div class="bg-white p-3 rounded-xl border border-slate-200 flex justify-between items-center">
-                                <div>
-                                    <h4 class="font-bold text-xs text-slate-900">Célula BETEL 1</h4>
-                                    <p class="text-[11px] text-slate-500">Rua Ovídio de Conte, 46 - Jardim Europa</p>
-                                </div>
-                                <a href="https://maps.google.com/?q=Rua+Ovideo+de+Conte,+46+-+Jardim+Europa+Agudos" target="_blank" class="bg-ieq-orange text-white p-2 rounded-lg text-xs font-bold hover:bg-orange-600 transition">
-                                    <i class="fa-solid fa-location-arrow"></i>
-                                </a>
-                            </div>
-
-                            <div class="bg-white p-3 rounded-xl border border-slate-200 flex justify-between items-center">
-                                <div>
-                                    <h4 class="font-bold text-xs text-slate-900">Célula BETEL 2</h4>
-                                    <p class="text-[11px] text-slate-500">Rua Wilma Maria Venturini, 567 - Parque Pampulha</p>
-                                </div>
-                                <a href="https://maps.google.com/?q=Rua+Wilma+Maria+Venturini,+567+-+Parque+Pampulha+Agudos" target="_blank" class="bg-ieq-orange text-white p-2 rounded-lg text-xs font-bold hover:bg-orange-600 transition">
-                                    <i class="fa-solid fa-location-arrow"></i>
-                                </a>
-                            </div>
-
-                            <div class="bg-white p-3 rounded-xl border border-slate-200 flex justify-between items-center">
-                                <div>
-                                    <h4 class="font-bold text-xs text-slate-900">Célula PENIEL</h4>
-                                    <p class="text-[11px] text-slate-500">Rua Professor Luiz Pedro da Cunha, 506 - Jardim Europa</p>
-                                </div>
-                                <a href="https://maps.google.com/?q=Rua+Professor+Luiz+Pedro+da+Cunha,+506+-+Jardim+Europa+Agudos" target="_blank" class="bg-ieq-orange text-white p-2 rounded-lg text-xs font-bold hover:bg-orange-600 transition">
-                                    <i class="fa-solid fa-location-arrow"></i>
-                                </a>
-                            </div>
-
-                            <div class="bg-white p-3 rounded-xl border border-slate-200 flex justify-between items-center">
-                                <div>
-                                    <h4 class="font-bold text-xs text-slate-900">Célula UFC</h4>
-                                    <p class="text-[11px] text-slate-500">Rua Ruth Maria Raimundo Messias, 40 - Bem Viver</p>
-                                </div>
-                                <a href="https://maps.google.com/?q=Rua+Ruth+Maria+Raimundo+Messias,+40+-+Bem+Viver+Agudos" target="_blank" class="bg-ieq-orange text-white p-2 rounded-lg text-xs font-bold hover:bg-orange-600 transition">
-                                    <i class="fa-solid fa-location-arrow"></i>
-                                </a>
-                            </div>
-
-                            <div class="bg-white p-3 rounded-xl border border-slate-200 flex justify-between items-center">
-                                <div>
-                                    <h4 class="font-bold text-xs text-slate-900">Célula EMANUEL 1</h4>
-                                    <p class="text-[11px] text-slate-500">Rua Frei Sebastião Elebrachp, 82 - Professor Simões</p>
-                                </div>
-                                <a href="https://maps.google.com/?q=Rua+Frei+Sebastiao+Elebrachp,+82+-+Professor+Simoes+Agudos" target="_blank" class="bg-ieq-orange text-white p-2 rounded-lg text-xs font-bold hover:bg-orange-600 transition">
-                                    <i class="fa-solid fa-location-arrow"></i>
-                                </a>
-                            </div>
-
-                            <div class="bg-white p-3 rounded-xl border border-slate-200 flex justify-between items-center">
-                                <div>
-                                    <h4 class="font-bold text-xs text-slate-900">Célula EMANUEL 2</h4>
-                                    <p class="text-[11px] text-slate-500">Rua Armando Malakovski, 40 - Cohab 4</p>
-                                </div>
-                                <a href="https://maps.google.com/?q=Rua+Armando+Malakovski,+40+-+Cohab+4+Agudos" target="_blank" class="bg-ieq-orange text-white p-2 rounded-lg text-xs font-bold hover:bg-orange-600 transition">
-                                    <i class="fa-solid fa-location-arrow"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-100">
-                        <span class="font-bold text-slate-800 text-xs sm:text-sm">QUARTA - Culto da Vitória</span>
-                        <span class="text-xs font-extrabold bg-ieq-green/20 text-ieq-darkGreen px-2.5 py-0.5 rounded-full">20h00</span>
-                    </div>
-
-                    <div class="flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-100">
-                        <span class="font-bold text-slate-800 text-xs sm:text-sm">SEXTA - Culto dos Milagres</span>
-                        <span class="text-xs font-extrabold bg-ieq-green/20 text-ieq-darkGreen px-2.5 py-0.5 rounded-full">20h00</span>
-                    </div>
-                </div>
-
-                <div class="pt-2 text-xs text-slate-500 flex items-center justify-center gap-1.5 text-center">
-                    <i class="fa-solid fa-map-pin text-ieq-green"></i>
-                    <span>Av. Antônio Maria dos Santos Escada, 87 - Parque Pampulha, Agudos - SP</span>
-                </div>
-            </div>
-
-            <!-- Dízimos & Ofertas (PIX) -->
-            <div id="secao-pix" class="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-sm text-center space-y-3">
-                <div class="w-12 h-12 bg-ieq-green/20 text-ieq-darkGreen rounded-2xl flex items-center justify-center mx-auto text-xl font-bold">
+            <!-- PIX Rodapé -->
+            <div id="secao-pix" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm text-center space-y-4 max-w-2xl mx-auto">
+                <div class="w-14 h-14 bg-ieq-green/20 text-ieq-darkGreen rounded-2xl flex items-center justify-center mx-auto text-2xl font-bold">
                     <i class="fa-solid fa-qrcode"></i>
                 </div>
-                <h3 class="font-extrabold text-slate-900 text-base">Dízimos & Ofertas via PIX</h3>
-                <p class="text-xs text-slate-500 max-w-xs mx-auto">
-                    "Cada um contribua segundo propôs no seu coração" (2 Co 9:7)
+                <h3 class="font-extrabold text-slate-900 text-lg">Dízimos & Ofertas via PIX</h3>
+                <p class="text-xs sm:text-sm text-slate-500 max-w-md mx-auto">
+                    "Cada um contribua segundo propôs no seu coração" (2 Coríntios 9:7)
                 </p>
 
-                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 max-w-sm mx-auto space-y-1">
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 max-w-md mx-auto space-y-1.5">
                     <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Chave PIX (E-mail):</p>
-                    <p class="font-mono text-slate-900 font-bold text-xs sm:text-sm select-all bg-white py-2 px-3 rounded-xl border border-slate-200 break-all" id="pixKeyDisplay">igrejaquadrangularpampulha@gmail.com</p>
-                    <p class="text-xs text-slate-500 pt-1" id="pixTitularDisplay">Favorecido: 3ª Igreja do Evangelho Quadrangular</p>
+                    <p class="font-mono text-slate-900 font-bold text-xs sm:text-sm select-all bg-white py-2.5 px-4 rounded-xl border border-slate-200 break-all">igrejaquadrangularpampulha@gmail.com</p>
+                    <p class="text-xs text-slate-500 pt-1">Favorecido: 3ª Igreja do Evangelho Quadrangular</p>
                 </div>
 
-                <button onclick="copiarPix()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition shadow-sm inline-flex items-center gap-2">
+                <button onclick="copiarPix()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-6 py-3 rounded-2xl text-xs transition shadow-sm inline-flex items-center gap-2">
                     <i class="fa-regular fa-copy text-ieq-green"></i> Copiar Chave PIX
                 </button>
             </div>
 
         </div>
 
-        <!-- ================= ABA ESPECIAL: MÊS QUADRANGULAR (NOVEMBRO) ================= -->
+        <!-- ================= ABA 2: MÊS QUADRANGULAR (TOTALMENTE DECORADA E WIDESCREEN) ================= -->
         <div id="viewQuadrangular" class="space-y-6 hidden">
             
-            <div class="quadrangular-gradient text-white p-6 sm:p-8 rounded-3xl shadow-xl border border-white/20 space-y-6 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+            <!-- Banner Principal Com As Cores Oficiais -->
+            <div class="quadrangular-gradient text-white p-6 sm:p-12 rounded-3xl shadow-2xl border-4 border-white/30 space-y-6 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
 
-                <div class="flex items-center justify-between border-b border-white/20 pb-3 relative z-10">
-                    <span class="bg-white text-slate-950 text-[11px] font-black px-3.5 py-1 rounded-full uppercase tracking-wider shadow-md">
-                        <i class="fa-solid fa-flag text-ieq-red"></i> Novembro • Mês Quadrangular
+                <div class="flex flex-col sm:flex-row items-center justify-between border-b border-white/20 pb-4 relative z-10 gap-3">
+                    <span class="bg-white text-slate-950 text-xs font-black px-4 py-1.5 rounded-full uppercase tracking-wider shadow-md">
+                        <i class="fa-solid fa-flag text-ieq-red"></i> Novembro • Mês Quadrangular Oficial
                     </span>
-                    <span class="text-xs font-bold text-white flex items-center gap-1">
-                        <i class="fa-solid fa-cross"></i> 75 Anos no Brasil
+                    <span class="text-xs sm:text-sm font-black text-amber-200 bg-black/30 px-4 py-1.5 rounded-full border border-white/20">
+                        ✨ 75 Anos de História no Brasil (Jubileu de Brilhante)[cite: 12]
                     </span>
                 </div>
 
                 <!-- Título e Introdução -->
-                <div class="text-center space-y-3 relative z-10">
-                    <h2 class="text-3xl sm:text-5xl font-black drop-shadow-md tracking-tight">Mês Quadrangular</h2>
-                    <p class="text-xs sm:text-sm text-white/95 max-w-lg mx-auto leading-relaxed">
-                        Novembro é o mês de celebração da nossa fé e identidade como Igreja. Celebramos o **Jubileu de Brilhante (75 Anos)** da Igreja do Evangelho Quadrangular no Brasil, reafirmando nossa história, fé e vidas transformadas!
+                <div class="text-center space-y-4 relative z-10 max-w-3xl mx-auto py-2">
+                    <h2 class="text-4xl sm:text-6xl font-black drop-shadow-lg tracking-tight">Mês Quadrangular</h2>
+                    <p class="text-sm sm:text-base text-white/95 leading-relaxed">
+                        Novembro é o Mês Quadrangular, um período de profunda celebração da nossa fé e identidade como Igreja[cite: 14]. A identidade visual reflete essa essência, unindo as quatro cores que representam a doutrina Quadrangular[cite: 14].
                     </p>
                 </div>
 
-                <!-- Os 4 Pilares da Doutrina Quadrangular -->
-                <div class="space-y-3 relative z-10">
-                    <h3 class="font-extrabold text-white text-sm sm:text-base uppercase tracking-wider text-center flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-star text-amber-300"></i> O Evangelho Completo de Cristo
+                <!-- VÍDEO OFICIAL DE APRESENTAÇÃO DO MÊS QUADRANGULAR -->
+                <div class="bg-black/40 backdrop-blur-md p-3 sm:p-5 rounded-3xl border-2 border-white/20 shadow-2xl relative z-10 max-w-4xl mx-auto space-y-3">
+                    <div class="flex items-center justify-between px-2">
+                        <span class="text-xs font-bold text-amber-300 uppercase tracking-widest flex items-center gap-1.5">
+                            <i class="fa-solid fa-video"></i> Vídeo Oficial • Mês Quadrangular
+                        </span>
+                        <span class="text-[10px] bg-white/20 text-white px-3 py-0.5 rounded-full">Apresentação Nacional</span>
+                    </div>
+                    
+                    <div class="relative w-full rounded-2xl overflow-hidden shadow-2xl bg-slate-950 aspect-video flex items-center justify-center">
+                        <!-- Substitua o link do src do iframe se tiver o vídeo no YouTube, ou exibe o player nativo se enviar para o GitHub -->
+                        <iframe class="w-full h-full object-cover" src="https://www.youtube.com/embed/videoseries?list=PL..." title="Mês Quadrangular Video" allowfullscreen onerror="this.style.display='none'; document.getElementById('fallbackVideo').classList.remove('hidden')"></iframe>
+                        
+                        <div id="fallbackVideo" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-slate-900/90 space-y-3">
+                            <i class="fa-solid fa-film text-4xl text-amber-400"></i>
+                            <p class="text-xs text-slate-200">Vídeo de Apresentação do Mês Quadrangular (Disponível na pasta do Drive / GitHub)</p>
+                            <a href="https://www.youtube.com/@QuadrangularPampulhaAgudosSP" target="_blank" class="bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-xl">Assistir no Canal do YouTube</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Os 4 Pilares da Doutrina (Widescreen Grid 4 Colunas) -->
+                <div class="space-y-4 relative z-10 pt-4">
+                    <h3 class="font-extrabold text-white text-base sm:text-lg uppercase tracking-wider text-center flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-star text-amber-300"></i> O Evangelho Completo de Jesus Cristo[cite: 14]
                     </h3>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs sm:text-sm">
                         
-                        <!-- 1. Jesus Salva (Vermelho) -->
-                        <div class="bg-red-950/60 p-4 rounded-2xl border border-red-500/40 space-y-1.5 shadow-md">
-                            <div class="flex items-center gap-2 text-red-300 font-black text-sm">
-                                <span class="w-7 h-7 rounded-xl bg-red-600 text-white flex items-center justify-center text-xs shadow">✝️</span>
-                                Jesus Salva
+                        <!-- 1. Jesus Salva -->
+                        <div class="bg-red-950/80 p-5 rounded-3xl border-2 border-red-500/50 space-y-2 shadow-xl flex flex-col justify-between">
+                            <div class="space-y-2">
+                                <div class="w-10 h-10 rounded-2xl bg-red-600 text-white flex items-center justify-center text-base shadow-md">✝️</div>
+                                <h4 class="text-red-300 font-black text-base">Jesus Salva</h4>
+                                <p class="text-slate-200 text-xs leading-relaxed">
+                                    Representado pela cor vermelha do sangue vertido na cruz[cite: 14]. É o fundamento da nossa redenção.
+                                </p>
                             </div>
-                            <p class="text-slate-200 text-xs leading-relaxed">
-                                Representado pela cor vermelha do sangue vertido na cruz. É o fundamento da nossa redenção e vida eterna.
-                            </p>
+                            <span class="text-[10px] text-red-300 font-bold uppercase tracking-wider pt-2 border-t border-red-500/30">1º Pilar</span>
                         </div>
 
-                        <!-- 2. Jesus Batiza com o Espírito Santo (Amarelo) -->
-                        <div class="bg-amber-950/60 p-4 rounded-2xl border border-amber-500/40 space-y-1.5 shadow-md">
-                            <div class="flex items-center gap-2 text-amber-300 font-black text-sm">
-                                <span class="w-7 h-7 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-xs shadow">🕊️</span>
-                                Jesus Batiza com o Espírito Santo
+                        <!-- 2. Jesus Batiza -->
+                        <div class="bg-amber-950/80 p-5 rounded-3xl border-2 border-amber-500/50 space-y-2 shadow-xl flex flex-col justify-between">
+                            <div class="space-y-2">
+                                <div class="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center text-base shadow-md">🕊️</div>
+                                <h4 class="text-amber-300 font-black text-base">Jesus Batiza</h4>
+                                <p class="text-slate-200 text-xs leading-relaxed">
+                                    Representado pelo amarelo do fogo e do poder do Espírito Santo[cite: 14] para testemunhar com ousadia.
+                                </p>
                             </div>
-                            <p class="text-slate-200 text-xs leading-relaxed">
-                                Representado pelo amarelo do fogo e do poder espiritual para testemunhar do Reino de Deus com ousadia.
-                            </p>
+                            <span class="text-[10px] text-amber-300 font-bold uppercase tracking-wider pt-2 border-t border-amber-500/30">2º Pilar</span>
                         </div>
 
-                        <!-- 3. Jesus Cura (Azul) -->
-                        <div class="bg-blue-950/60 p-4 rounded-2xl border border-blue-500/40 space-y-1.5 shadow-md">
-                            <div class="flex items-center gap-2 text-blue-300 font-black text-sm">
-                                <span class="w-7 h-7 rounded-xl bg-blue-600 text-white flex items-center justify-center text-xs shadow">🏆</span>
-                                Jesus o Médico dos Médicos (Cura)
+                        <!-- 3. Jesus Cura -->
+                        <div class="bg-blue-950/80 p-5 rounded-3xl border-2 border-blue-500/50 space-y-2 shadow-xl flex flex-col justify-between">
+                            <div class="space-y-2">
+                                <div class="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-base shadow-md">🏆</div>
+                                <h4 class="text-blue-300 font-black text-base">Jesus Cura</h4>
+                                <p class="text-slate-200 text-xs leading-relaxed">
+                                    Representado pelo azul das águas e da cura divina[cite: 14] para o corpo, alma e espírito.
+                                </p>
                             </div>
-                            <p class="text-slate-200 text-xs leading-relaxed">
-                                Representado pelo azul das águas e da cura divina para o corpo, alma e espírito.
-                            </p>
+                            <span class="text-[10px] text-blue-300 font-bold uppercase tracking-wider pt-2 border-t border-blue-500/30">3º Pilar</span>
                         </div>
 
-                        <!-- 4. Jesus Voltará (Roxo) -->
-                        <div class="bg-purple-950/60 p-4 rounded-2xl border border-purple-500/40 space-y-1.5 shadow-md">
-                            <div class="flex items-center gap-2 text-purple-300 font-black text-sm">
-                                <span class="w-7 h-7 rounded-xl bg-purple-600 text-white flex items-center justify-center text-xs shadow">👑</span>
-                                Jesus o Rei que Voltará
+                        <!-- 4. Jesus Voltará -->
+                        <div class="bg-purple-950/80 p-5 rounded-3xl border-2 border-purple-500/50 space-y-2 shadow-xl flex flex-col justify-between">
+                            <div class="space-y-2">
+                                <div class="w-10 h-10 rounded-2xl bg-purple-600 text-white flex items-center justify-center text-base shadow-md">👑</div>
+                                <h4 class="text-purple-300 font-black text-base">Jesus Voltará</h4>
+                                <p class="text-slate-200 text-xs leading-relaxed">
+                                    Representado pela cor real (roxo)[cite: 14], simbolizando a bendita esperança do retorno do nosso Rei.
+                                </p>
                             </div>
-                            <p class="text-slate-200 text-xs leading-relaxed">
-                                Representado pela cor real (roxo), simbolizando a bendita esperança do retorno do nosso Senhor e Rei.
-                            </p>
+                            <span class="text-[10px] text-purple-300 font-bold uppercase tracking-wider pt-2 border-t border-purple-500/30">4º Pilar</span>
                         </div>
 
                     </div>
                 </div>
 
-                <!-- Conceito e Mensagem -->
-                <div class="bg-black/30 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/15 space-y-2 relative z-10 text-xs sm:text-sm text-slate-200 leading-relaxed">
-                    <h3 class="font-bold text-white text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-heart text-red-400"></i> Uma Igreja Viva e em Movimento
+                <!-- Conceito Oficial Extraído do Drive -->
+                <div class="bg-black/40 backdrop-blur-md p-6 sm:p-8 rounded-3xl border-2 border-white/20 space-y-3 relative z-10 text-xs sm:text-sm text-slate-100 leading-relaxed max-w-4xl mx-auto">
+                    <h3 class="font-black text-amber-300 text-base sm:text-lg uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-church text-ieq-green"></i> Nossa Identidade e Missão em Novembro
                     </h3>
                     <p>
-                        O Mês Quadrangular é uma oportunidade de reafirmarmos nossa aliança, nossa unidade e nossa gratidão por fazer parte desta família que um dia nos acolheu com amor, sem julgamentos.
+                        As formas geométricas expressam dinamismo e propósito, revelando uma igreja viva, sólida e em movimento[cite: 14]. A tipografia com traços limpos e diretos reforça a clareza e a força da mensagem[cite: 14].
+                    </p>
+                    <p class="italic text-amber-200 font-medium">
+                        "Que este mês nos inspire a viver o evangelho completo de Jesus Cristo: o Salvador, o Batizador com o Espírito Santo, o Médico dos médicos e o Rei que voltará."[cite: 14]
                     </p>
                 </div>
 
                 <div class="pt-2 text-center relative z-10">
-                    <button onclick="switchView('portal')" class="bg-white hover:bg-slate-100 text-slate-950 font-extrabold px-6 py-3 rounded-2xl text-xs transition shadow-lg inline-flex items-center gap-2">
-                        <i class="fa-solid fa-calendar-days text-ieq-blue"></i> Ver Programação dos Cultos de Novembro
+                    <button onclick="switchView('portal')" class="bg-white hover:bg-slate-100 text-slate-950 font-black px-8 py-3.5 rounded-2xl text-xs sm:text-sm transition shadow-xl inline-flex items-center gap-2">
+                        <i class="fa-solid fa-house"></i> Voltar à Página Inicial
                     </button>
                 </div>
             </div>
 
         </div>
 
-        <!-- ================= ABA EXCLUSIVA: 5º NATAL FELIZ ================= -->
+        <!-- ================= ABA 3: 5º NATAL FELIZ ================= -->
         <div id="viewNatal" class="space-y-6 hidden">
             
-            <div class="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white p-6 sm:p-8 rounded-3xl shadow-xl border border-amber-500/40 space-y-5 relative overflow-hidden">
+            <div class="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white p-6 sm:p-10 rounded-3xl shadow-xl border-2 border-amber-500/40 space-y-6 relative overflow-hidden max-w-4xl mx-auto">
                 <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-                <div class="flex items-center justify-between border-b border-amber-500/20 pb-3 relative z-10">
-                    <span class="inline-flex items-center gap-1.5 gold-brush text-slate-950 text-[11px] font-black px-3.5 py-1 rounded-full uppercase tracking-wider shadow-md">
+                <div class="flex items-center justify-between border-b border-amber-500/20 pb-4 relative z-10">
+                    <span class="inline-flex items-center gap-1.5 gold-brush text-slate-950 text-xs font-black px-4 py-1 rounded-full uppercase tracking-wider shadow-md">
                         <i class="fa-solid fa-star"></i> Ação Social • 5ª Edição
                     </span>
                     <span class="text-xs font-bold text-amber-300 flex items-center gap-1">
@@ -608,78 +561,51 @@
                     </span>
                 </div>
 
-                <!-- Título Cursivo e Faixa Dourada com Versículo -->
-                <div class="text-center space-y-2 py-2 relative z-10">
+                <div class="text-center space-y-3 py-2 relative z-10">
                     <h2 class="text-4xl sm:text-6xl text-amber-300 font-natal drop-shadow-lg tracking-wide">5º Natal Feliz</h2>
                     
-                    <div class="gold-brush text-slate-950 px-4 py-2 rounded-xl font-extrabold text-xs sm:text-sm shadow-md inline-block max-w-md mx-auto">
+                    <div class="gold-brush text-slate-950 px-5 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm shadow-md inline-block">
                         "Quanto for possível, não deixe de fazer o bem a quem dele precisa."
                         <span class="block font-bold text-[10px] text-slate-900 uppercase tracking-wider">— Provérbios 3:27</span>
                     </div>
                 </div>
 
-                <!-- História do Projeto -->
-                <div class="space-y-3 text-slate-200 text-xs sm:text-sm leading-relaxed relative z-10 bg-white/5 p-4 sm:p-5 rounded-2xl border border-amber-500/20">
-                    <h3 class="font-black text-amber-300 text-sm sm:text-base flex items-center gap-2">
+                <div class="space-y-3 text-slate-200 text-xs sm:text-sm leading-relaxed relative z-10 bg-white/5 p-6 rounded-3xl border border-amber-500/20">
+                    <h3 class="font-black text-amber-300 text-base flex items-center gap-2">
                         <i class="fa-solid fa-heart text-red-500"></i> A Nossa História & Missão
                     </h3>
                     <p>
-                        Há 5 anos o projeto <strong>Natal Feliz</strong> nasceu do coração da <strong>Quadrangular Pampulha (3ª IEQ Agudos)</strong> com o objetivo simples e abençoado: levar o amor de Deus, a Palavra e um presente de Natal para crianças.
+                        Há 5 anos o projeto <strong>Natal Feliz</strong> nasceu do coração da <strong>Quadrangular Pampulha (3ª IEQ Agudos)</strong> com o objetivo de levar o amor de Deus e um presente para as crianças.
                     </p>
                 </div>
 
-                <!-- A novidade deste ano -->
-                <div class="bg-gradient-to-r from-amber-500/20 to-yellow-500/10 p-4 sm:p-5 rounded-2xl border border-amber-500/40 space-y-2 relative z-10">
-                    <h3 class="font-black text-yellow-300 text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2">
+                <div class="bg-gradient-to-r from-amber-500/20 to-yellow-500/10 p-6 rounded-3xl border border-amber-500/40 space-y-3 relative z-10">
+                    <h3 class="font-black text-yellow-300 text-sm sm:text-base uppercase tracking-wider flex items-center gap-2">
                         <i class="fa-solid fa-sparkles"></i> O que teremos de novo este ano?
                     </h3>
                     <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">
-                        Nesta 5ª edição, faremos diferente e muito mais divertido! <strong>As crianças virão até a nossa igreja</strong> para uma grande festa inesquecível.
+                        Nesta 5ª edição, <strong>as crianças virão até a nossa igreja</strong> para uma grande festa inesquecível com pula-pula, algodão doce, pipoca e entrega de brinquedos!
                     </p>
-                    
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs font-bold pt-2">
-                        <div class="bg-black/30 p-2.5 rounded-xl border border-amber-500/20">
-                            <span class="text-xl mb-1 block">🏰</span>
-                            <span class="text-amber-200">Pula-Pula & Bolinhas</span>
-                        </div>
-                        <div class="bg-black/30 p-2.5 rounded-xl border border-amber-500/20">
-                            <span class="text-xl mb-1 block">🍿</span>
-                            <span class="text-amber-200">Pipoca & Algodão Doce</span>
-                        </div>
-                        <div class="bg-black/30 p-2.5 rounded-xl border border-amber-500/20">
-                            <span class="text-xl mb-1 block">🧸</span>
-                            <span class="text-amber-200">Entrega dos Brinquedos</span>
-                        </div>
-                        <div class="bg-black/30 p-2.5 rounded-xl border border-amber-500/20">
-                            <span class="text-xl mb-1 block">✨</span>
-                            <span class="text-amber-200">Muitos Sorrisos</span>
-                        </div>
-                    </div>
                 </div>
 
-                <!-- Como Contribuir e Fazer a Doação -->
-                <div class="bg-slate-900/90 backdrop-blur-md p-5 rounded-2xl border border-amber-500/40 space-y-4 shadow-inner relative z-10">
-                    <h3 class="font-black text-center text-sm sm:text-base text-yellow-400 uppercase tracking-widest flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-heart text-red-500 animate-pulse"></i> COMO VOCÊ PODE AJUDAR
+                <div class="bg-slate-900/90 backdrop-blur-md p-6 rounded-3xl border border-amber-500/40 space-y-4 shadow-inner relative z-10">
+                    <h3 class="font-black text-center text-sm sm:text-base text-yellow-400 uppercase tracking-widest">
+                        COMO VOCÊ PODE AJUDAR 🎁
                     </h3>
                     
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
                         <div class="bg-white/5 p-4 rounded-2xl border border-amber-500/20 space-y-1">
-                            <p class="font-bold text-amber-300 flex items-center gap-1.5">
-                                <i class="fa-solid fa-robot"></i> 1. Doação de Brinquedos
-                            </p>
-                            <p class="text-slate-300 text-xs leading-relaxed">Doe brinquedos novos ou seminovos em bom estado na secretaria da igreja durante os cultos.</p>
+                            <p class="font-bold text-amber-300">1. Doação de Brinquedos</p>
+                            <p class="text-slate-300 text-xs">Doe brinquedos novos ou seminovos em bom estado na secretaria da igreja.</p>
                         </div>
                         <div class="bg-white/5 p-4 rounded-2xl border border-amber-500/20 space-y-1">
-                            <p class="font-bold text-amber-300 flex items-center gap-1.5">
-                                <i class="fa-solid fa-hand-holding-dollar"></i> 2. Doação em Dinheiro via PIX
-                            </p>
-                            <p class="text-slate-300 text-xs leading-relaxed">Transfira pelo PIX e coloque na observação: <strong class="text-white">"Natal Feliz"</strong>.</p>
+                            <p class="font-bold text-amber-300">2. Doação via PIX</p>
+                            <p class="text-slate-300 text-xs">Transfira pelo PIX e escreva na observação: <strong class="text-white">"Natal Feliz"</strong>.</p>
                         </div>
                     </div>
 
-                    <div class="pt-2 text-center">
-                        <button onclick="copiarPixNatal()" class="gold-brush hover:opacity-90 text-slate-950 font-black px-6 py-3 rounded-2xl text-xs sm:text-sm transition shadow-lg inline-flex items-center gap-2">
+                    <div class="text-center pt-2">
+                        <button onclick="copiarPixNatal()" class="gold-brush hover:opacity-90 text-slate-950 font-black px-8 py-3.5 rounded-2xl text-xs sm:text-sm transition shadow-lg inline-flex items-center gap-2">
                             <i class="fa-regular fa-copy"></i> Copiar Chave PIX (E-mail da Igreja)
                         </button>
                     </div>
@@ -688,52 +614,45 @@
 
         </div>
 
-        <!-- ================= ABA 2: DEDICADA AO VISITANTE ================= -->
-        <div id="viewVisitante" class="space-y-5 hidden">
+        <!-- ================= ABA 4: VISITANTES ================= -->
+        <div id="viewVisitante" class="space-y-6 hidden max-w-4xl mx-auto">
             
-            <div class="bg-gradient-to-br from-emerald-900 to-slate-900 text-white p-5 sm:p-8 rounded-3xl shadow-md space-y-4 relative overflow-hidden">
-                <div class="absolute -right-6 -bottom-6 w-36 h-36 bg-ieq-green/10 rounded-full blur-2xl"></div>
-                
-                <div class="inline-flex items-center gap-2 bg-ieq-green/20 text-ieq-green px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+            <div class="bg-gradient-to-br from-emerald-900 to-slate-900 text-white p-6 sm:p-8 rounded-3xl shadow-md space-y-4 relative overflow-hidden">
+                <div class="inline-flex items-center gap-2 bg-ieq-green/20 text-ieq-green px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
                     <i class="fa-solid fa-heart"></i> Boas-Vindas!
                 </div>
 
-                <h2 class="text-xl sm:text-3xl font-extrabold text-white leading-snug">
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white">
                     A sua presença é extremamente importante para nós!
                 </h2>
 
-                <blockquote class="bg-white/10 backdrop-blur-md p-3.5 sm:p-4 rounded-2xl border border-white/15 italic text-xs sm:text-sm text-emerald-100 leading-relaxed">
-                    "Alegrei-me com os que me disseram: 'Vamos à casa do Senhor!'"
-                    <span class="block mt-2 font-bold text-right text-ieq-green not-italic">— Salmos 122:1</span>
+                <blockquote class="bg-white/10 p-4 rounded-2xl border border-white/15 italic text-xs sm:text-sm text-emerald-100">
+                    "Alegrei-me com os que me disseram: 'Vamos à casa do Senhor!'" (Salmos 122:1)
                 </blockquote>
-
-                <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">
-                    Neste Mês Quadrangular, sinta-se duplamente abençoado(a) por estar conosco. Queremos caminhar junto com você e sua família!
-                </p>
             </div>
 
-            <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-sm space-y-5">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-5">
                 <div class="border-b border-slate-100 pb-3">
                     <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
                         <i class="fa-solid fa-pen-to-square text-ieq-green"></i> Registro de Presença & Pedido de Oração
                     </h3>
-                    <p class="text-xs text-slate-500">Preencha abaixo para mantermos contato e orarmos por você!</p>
+                    <p class="text-xs text-slate-500">Preencha abaixo para mantermos contato!</p>
                 </div>
 
                 <form id="formVisitante" onsubmit="salvarVisitanteFirebase(event)" class="space-y-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Seu Nome *</label>
-                        <input type="text" id="visNome" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-ieq-green" placeholder="Ex: Maria Silva">
+                        <input type="text" id="visNome" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:border-ieq-green" placeholder="Ex: Maria Silva">
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">WhatsApp / Telefone *</label>
-                            <input type="tel" id="visWhatsapp" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-ieq-green" placeholder="(14) 99999-9999">
+                            <input type="tel" id="visWhatsapp" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:border-ieq-green" placeholder="(14) 99999-9999">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Você é...</label>
-                            <select id="visTipo" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-ieq-green">
+                            <select id="visTipo" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:border-ieq-green">
                                 <option value="Primeira Vez">Primeira vez na igreja</option>
                                 <option value="Visitante Frequente">Visitante Frequente</option>
                                 <option value="Membro">Membro / Congregado</option>
@@ -741,18 +660,18 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Trouxe sua família?</label>
-                            <select id="visTrouxeFamilia" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-ieq-green">
+                            <select id="visTrouxeFamilia" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800">
                                 <option value="Sim">Sim, trouxe a família</option>
                                 <option value="Não">Não, vim sozinho(a)</option>
                                 <option value="Com Amigos">Vim com amigos</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Quantas pessoas vieram com você?</label>
-                            <select id="visQtdPessoas" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-ieq-green">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Quantas pessoas?</label>
+                            <select id="visQtdPessoas" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800">
                                 <option value="Apenas eu">Apenas eu (1)</option>
                                 <option value="2 pessoas">2 pessoas</option>
                                 <option value="3 a 4 pessoas">3 a 4 pessoas</option>
@@ -761,19 +680,19 @@
                         </div>
                     </div>
 
-                    <div class="bg-emerald-50/60 p-3.5 rounded-2xl border border-emerald-100 flex items-start space-x-3">
+                    <div class="bg-emerald-50/60 p-4 rounded-2xl border border-emerald-100 flex items-start space-x-3">
                         <input type="checkbox" id="visQueroGrupo" class="mt-1 w-4 h-4 text-ieq-green rounded accent-ieq-green cursor-pointer shrink-0" checked>
-                        <label for="visQueroGrupo" class="text-xs text-slate-700 leading-relaxed cursor-pointer">
+                        <label for="visQueroGrupo" class="text-xs text-slate-700 cursor-pointer">
                             <strong>Desejo ser adicionado(a) ao Grupo de Avisos do WhatsApp</strong> da igreja.
                         </label>
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Pedido de Oração (Opcional e Sigiloso)</label>
-                        <textarea id="visPedido" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-ieq-green" placeholder="Escreva aqui seu pedido ou motivo de oração..."></textarea>
+                        <textarea id="visPedido" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:border-ieq-green" placeholder="Escreva aqui seu pedido ou motivo de oração..."></textarea>
                     </div>
 
-                    <button type="submit" class="w-full bg-ieq-green hover:bg-ieq-greenHover text-slate-950 font-bold py-3.5 rounded-2xl text-sm transition shadow-sm">
+                    <button type="submit" class="w-full bg-ieq-green hover:bg-ieq-greenHover text-slate-950 font-bold py-4 rounded-2xl text-sm transition shadow-md">
                         Enviar Informações 🕊️
                     </button>
                 </form>
@@ -781,254 +700,174 @@
 
         </div>
 
-        <!-- ================= ABA DE TESTEMUNHOS & VITÓRIAS ================= -->
-        <div id="viewTestemunho" class="space-y-5 hidden">
-            <div class="bg-amber-500 text-slate-950 p-5 sm:p-6 rounded-3xl shadow-sm text-center space-y-2">
+        <!-- ================= ABA 5: TESTEMUNHOS ================= -->
+        <div id="viewTestemunho" class="space-y-6 hidden max-w-4xl mx-auto">
+            <div class="bg-amber-500 text-slate-950 p-6 rounded-3xl shadow-sm text-center space-y-2">
                 <div class="w-12 h-12 bg-slate-950/10 text-slate-950 rounded-2xl flex items-center justify-center mx-auto text-xl font-bold">
                     <i class="fa-solid fa-hands-clapping"></i>
                 </div>
-                <h2 class="text-xl sm:text-2xl font-extrabold">Conta o que Deus fez! 🙌</h2>
-                <p class="text-xs sm:text-sm text-slate-900 max-w-md mx-auto leading-relaxed font-medium">
-                    "Contem a sua glória entre as nações, os seus maravilhosos feitos entre todos os povos." (Salmo 96:3)
+                <h2 class="text-2xl font-extrabold">Conta o que Deus fez! 🙌</h2>
+                <p class="text-xs sm:text-sm text-slate-900 max-w-md mx-auto font-medium">
+                    "Contem a sua glória entre as nações, os seus maravilhosos feitos." (Salmo 96:3)
                 </p>
             </div>
 
-            <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-sm space-y-4">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-4">
                 <div class="border-b border-slate-100 pb-3">
                     <h3 class="font-bold text-slate-900 text-base">Envie o seu Testemunho ou Benção</h3>
-                    <p class="text-xs text-slate-500">Compartilhe conosco a sua vitória para glorificarmos a Deus juntos!</p>
                 </div>
 
                 <form id="formTestemunho" onsubmit="salvarTestemunhoFirebase(event)" class="space-y-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Seu Nome *</label>
-                        <input type="text" id="testNome" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-ieq-green" placeholder="Ex: João Pedro">
+                        <input type="text" id="testNome" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800" placeholder="Ex: João Pedro">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Seu WhatsApp (Para contato da liderança)</label>
-                        <input type="tel" id="testWhatsapp" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-ieq-green" placeholder="(14) 99999-9999">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Seu WhatsApp</label>
+                        <input type="tel" id="testWhatsapp" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800" placeholder="(14) 99999-9999">
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Conte a sua vitória / milagre *</label>
-                        <textarea id="testTexto" rows="4" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-ieq-green" placeholder="Escreva aqui detalhadamente a benção que Deus realizou na sua vida..."></textarea>
+                        <textarea id="testTexto" rows="4" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800" placeholder="Escreva aqui detalhadamente..."></textarea>
                     </div>
 
-                    <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200/80 space-y-2">
+                    <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 space-y-2">
                         <label class="block text-xs font-bold text-slate-800">Deseja compartilhar no culto?</label>
                         <div class="space-y-2">
                             <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
-                                <input type="radio" name="testContar" value="Quero ir lá na frente contar no culto!" class="accent-amber-600 shrink-0">
-                                <span class="font-bold text-amber-900">Sim! Quero ir lá na frente contar o testemunho para a igreja! 🎤</span>
+                                <input type="radio" name="testContar" value="Quero ir lá na frente contar no culto!" class="accent-amber-600">
+                                <span class="font-bold text-amber-900">Sim! Quero ir lá na frente contar no culto! 🎤</span>
                             </label>
                             <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
-                                <input type="radio" name="testContar" value="Pode ler no culto (sem meu nome se preferir)" class="accent-amber-600 shrink-0">
-                                <span>Pode apenas ler ou mencionar o testemunho no culto.</span>
-                            </label>
-                            <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
-                                <input type="radio" name="testContar" value="Apenas para o Pastor saber" class="accent-amber-600 shrink-0" checked>
+                                <input type="radio" name="testContar" value="Apenas para o Pastor saber" class="accent-amber-600" checked>
                                 <span>Apenas para o Pastor e a liderança saberem (Sigiloso).</span>
                             </label>
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3.5 rounded-2xl text-sm transition shadow-sm">
+                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-4 rounded-2xl text-sm transition shadow-sm">
                         Enviar Testemunho 🙌
                     </button>
                 </form>
             </div>
         </div>
 
-        <!-- ================= ABA 3: PAINEL DE ADMINISTRAÇÃO ================= -->
-        <div id="viewAdmin" class="space-y-5 hidden">
+        <!-- ================= ABA 6: ADMINISTRAÇÃO ================= -->
+        <div id="viewAdmin" class="space-y-6 hidden max-w-5xl mx-auto">
             
-            <div class="flex justify-between items-center bg-white p-4 rounded-3xl border border-slate-200/80 shadow-sm">
+            <div class="flex justify-between items-center bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm">
                 <div>
                     <h2 class="font-bold text-base text-slate-900 flex items-center gap-2">
                         <i class="fa-solid fa-gauge text-ieq-green"></i> Painel da Secretaria
                     </h2>
                     <p class="text-xs text-slate-400">Quadrangular Pampulha - Agudos</p>
                 </div>
-                <button onclick="logoutAdmin()" class="bg-red-50 text-red-600 hover:bg-red-100 text-xs font-bold px-3 py-1.5 rounded-xl transition">
-                    Sair
+                <button onclick="logoutAdmin()" class="bg-red-50 text-red-600 hover:bg-red-100 text-xs font-bold px-4 py-2 rounded-xl transition">
+                    Sair do Admin
                 </button>
             </div>
 
-            <!-- Abas do Admin -->
-            <div class="flex space-x-2 border-b border-slate-200 pb-2 overflow-x-auto no-scrollbar shrink-0">
-                <button onclick="switchAdminTab('visitantes')" id="tabVisBtn" class="px-3.5 py-2 text-xs font-bold rounded-xl bg-ieq-green text-slate-950 transition whitespace-nowrap shrink-0">Cadastros</button>
-                <button onclick="switchAdminTab('testemunhos')" id="tabTestBtn" class="px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap shrink-0">Testemunhos</button>
-                <button onclick="switchAdminTab('agenda')" id="tabAgendaBtn" class="px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap shrink-0">Agenda do Mês</button>
-                <button onclick="switchAdminTab('destaque')" id="tabDestBtn" class="px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap shrink-0">Configurações</button>
+            <div class="flex space-x-2 border-b border-slate-200 pb-2 overflow-x-auto no-scrollbar">
+                <button onclick="switchAdminTab('visitantes')" id="tabVisBtn" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-ieq-green text-slate-950 transition whitespace-nowrap">Cadastros</button>
+                <button onclick="switchAdminTab('testemunhos')" id="tabTestBtn" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap">Testemunhos</button>
+                <button onclick="switchAdminTab('agenda')" id="tabAgendaBtn" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap">Agenda do Mês</button>
+                <button onclick="switchAdminTab('destaque')" id="tabDestBtn" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap">Configurações & Live</button>
             </div>
 
-            <!-- Conteúdo Admin 1: Cadastros -->
+            <!-- Admin Tab 1 -->
             <div id="adminTabVisitantes" class="space-y-5">
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
-                        <span class="text-xs text-slate-400 block mb-0.5 font-medium">Total Cadastros</span>
-                        <h3 class="text-2xl font-bold text-slate-900" id="statVisitantes">0</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                        <span class="text-xs text-slate-400 block mb-1">Total Cadastros</span>
+                        <h3 class="text-3xl font-bold text-slate-900" id="statVisitantes">0</h3>
                     </div>
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
-                        <span class="text-xs text-slate-400 block mb-0.5 font-medium">Querem Whats</span>
-                        <h3 class="text-2xl font-bold text-emerald-600" id="statGrupoWhats">0</h3>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                        <span class="text-xs text-slate-400 block mb-1">Querem WhatsApp</span>
+                        <h3 class="text-3xl font-bold text-emerald-600" id="statGrupoWhats">0</h3>
                     </div>
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm col-span-2 sm:col-span-1">
-                        <span class="text-xs text-slate-400 block mb-0.5 font-medium">Pedidos Oração</span>
-                        <h3 class="text-2xl font-bold text-indigo-600" id="statOracoes">0</h3>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                        <span class="text-xs text-slate-400 block mb-1">Pedidos de Oração</span>
+                        <h3 class="text-3xl font-bold text-indigo-600" id="statOracoes">0</h3>
                     </div>
                 </div>
 
-                <div class="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/80 shadow-sm space-y-3">
-                    <h3 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2">
-                        Lista de Pessoas Cadastradas
-                    </h3>
-                    <div id="listaVisitantesAdmin" class="space-y-2.5">
-                        <p class="text-xs text-slate-400 italic">Nenhum visitante cadastrado até o momento.</p>
+                <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
+                    <h3 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-3">Lista de Cadastros</h3>
+                    <div id="listaVisitantesAdmin" class="space-y-3">
+                        <p class="text-xs text-slate-400 italic">Nenhum visitante cadastrado.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Conteúdo Admin 2: Testemunhos Recebidos -->
-            <div id="adminTabTestemunhos" class="space-y-4 hidden bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/80 shadow-sm">
-                <div class="border-b border-slate-100 pb-2">
-                    <h3 class="font-bold text-sm text-slate-900">Testemunhos Recebidos</h3>
-                    <p class="text-xs text-slate-400">Veja quem compartilhou vitórias.</p>
-                </div>
-
+            <!-- Admin Tab 2 -->
+            <div id="adminTabTestemunhos" class="space-y-4 hidden bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
+                <h3 class="font-bold text-sm text-slate-900 border-b border-slate-100 pb-3">Testemunhos Recebidos</h3>
                 <div id="listaTestemunhosAdmin" class="space-y-3">
-                    <p class="text-xs text-slate-400 italic">Nenhum testemunho recebido ainda.</p>
+                    <p class="text-xs text-slate-400 italic">Nenhum testemunho recebido.</p>
                 </div>
             </div>
 
-            <!-- Conteúdo Admin 3: GERENCIAR AGENDA -->
-            <div id="adminTabAgenda" class="space-y-4 hidden bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/80 shadow-sm">
-                <div class="border-b border-slate-100 pb-2">
-                    <h3 class="font-bold text-sm text-slate-900">Gerenciar Agenda do Mês</h3>
-                    <p class="text-xs text-slate-400">Adicione eventos especiais da agenda.</p>
-                </div>
-
-                <form onsubmit="adicionarEventoAgenda(event)" class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
-                    <h4 class="font-bold text-xs text-slate-800 uppercase tracking-wider">Adicionar Evento</h4>
-                    
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+            <!-- Admin Tab 3 -->
+            <div id="adminTabAgenda" class="space-y-4 hidden bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
+                <h3 class="font-bold text-sm text-slate-900 border-b border-slate-100 pb-3">Gerenciar Agenda do Mês</h3>
+                
+                <form onsubmit="adicionarEventoAgenda(event)" class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         <div>
-                            <label class="block text-[11px] font-bold text-slate-700 mb-1">Dia (Número)</label>
-                            <input type="text" id="agendaDiaNum" required placeholder="Ex: 01" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Dia (Número)</label>
+                            <input type="text" id="agendaDiaNum" required placeholder="Ex: 01" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs">
                         </div>
                         <div>
-                            <label class="block text-[11px] font-bold text-slate-700 mb-1">Dia da Semana</label>
-                            <input type="text" id="agendaDiaSemana" required placeholder="Ex: DOM, SÁB" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Dia da Semana</label>
+                            <input type="text" id="agendaDiaSemana" required placeholder="Ex: DOM" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs">
                         </div>
                         <div class="col-span-2 sm:col-span-1">
-                            <label class="block text-[11px] font-bold text-slate-700 mb-1">Cor</label>
-                            <select id="agendaCor" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Cor / Estilo</label>
+                            <select id="agendaCor" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs">
                                 <option value="quadrangular-gradient text-white">Quadrangular (4 Cores)</option>
-                                <option value="bg-amber-500 text-white">Laranja / Dourado</option>
-                                <option value="bg-ieq-green text-slate-950">Verde IEQ</option>
-                                <option value="bg-purple-600 text-white">Roxo</option>
+                                <option value="bg-amber-500 text-white">Dourado</option>
+                                <option value="bg-ieq-green text-slate-950">Verde</option>
                             </select>
                         </div>
                     </div>
-
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Título do Evento</label>
-                        <input type="text" id="agendaTitulo" required placeholder="Ex: Culto Especial Mês Quadrangular" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Título</label>
+                        <input type="text" id="agendaTitulo" required placeholder="Culto Especial" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs">
                     </div>
-
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Horário / Local</label>
-                        <input type="text" id="agendaDesc" required placeholder="Ex: 18h30 • Templo Principal" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Horário / Descrição</label>
+                        <input type="text" id="agendaDesc" required placeholder="18h30 • Templo Principal" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs">
                     </div>
-
-                    <button type="submit" class="bg-ieq-green hover:bg-ieq-greenHover text-slate-950 font-bold px-4 py-2 rounded-xl text-xs transition shadow-sm w-full">
-                        + Adicionar na Agenda
-                    </button>
+                    <button type="submit" class="bg-ieq-green text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs w-full">+ Adicionar Evento</button>
                 </form>
 
-                <div class="space-y-2 pt-2">
-                    <h4 class="font-bold text-xs text-slate-800 border-b border-slate-100 pb-1">Eventos Atuais:</h4>
-                    <div id="listaAgendaAdmin" class="space-y-2">
-                        <p class="text-xs text-slate-400 italic">Nenhum evento adicionado.</p>
-                    </div>
+                <div id="listaAgendaAdmin" class="space-y-2 pt-3">
+                    <p class="text-xs text-slate-400 italic">Nenhum evento na agenda.</p>
                 </div>
             </div>
 
-            <!-- Conteúdo Admin 4: Configurações & Live -->
-            <div id="adminTabDestaque" class="space-y-4 hidden bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/80 shadow-sm">
-                <div class="border-b border-slate-100 pb-2">
-                    <h3 class="font-bold text-sm text-slate-900">Gerenciar Transmissão Ao Vivo & Seções</h3>
-                </div>
-
-                <form onsubmit="salvarDestaqueFirebase(event)" class="space-y-3.5">
-                    
-                    <div class="bg-amber-50 p-3.5 rounded-2xl border border-amber-200 flex items-center space-x-3">
-                        <input type="checkbox" id="admNatalCheck" class="w-5 h-5 text-amber-600 rounded accent-amber-600 cursor-pointer shrink-0" checked>
-                        <label for="admNatalCheck" class="text-xs font-bold text-slate-800 cursor-pointer">
-                            🎁 Exibir Aba e Card do "Natal Feliz"
-                        </label>
+            <!-- Admin Tab 4 -->
+            <div id="adminTabDestaque" class="space-y-4 hidden bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
+                <form onsubmit="salvarDestaqueFirebase(event)" class="space-y-4">
+                    <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 flex items-center space-x-3">
+                        <input type="checkbox" id="admNatalCheck" class="w-5 h-5 text-amber-600 rounded cursor-pointer" checked>
+                        <label for="admNatalCheck" class="text-xs font-bold text-slate-800 cursor-pointer">🎁 Exibir Aba e Card do "Natal Feliz"</label>
                     </div>
 
-                    <div class="bg-red-50 p-3.5 sm:p-4 rounded-2xl border border-red-200 space-y-3">
+                    <div class="bg-red-50 p-4 rounded-2xl border border-red-200 space-y-3">
                         <div class="flex items-center space-x-3">
-                            <input type="checkbox" id="admAoVivoCheck" class="w-5 h-5 text-red-600 rounded accent-red-600 cursor-pointer shrink-0">
-                            <label for="admAoVivoCheck" class="text-xs font-bold text-red-900 cursor-pointer">
-                                🔴 ESTAMOS AO VIVO AGORA (Exibir faixa no topo)
-                            </label>
+                            <input type="checkbox" id="admAoVivoCheck" class="w-5 h-5 text-red-600 rounded cursor-pointer">
+                            <label for="admAoVivoCheck" class="text-xs font-bold text-red-950 cursor-pointer">🔴 ESTAMOS AO VIVO AGORA (Ativar faixa no topo)</label>
                         </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-700 mb-1">Link do YouTube</label>
-                                <input type="text" id="admAoVivoYtb" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800">
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-700 mb-1">Link do Facebook</label>
-                                <input type="text" id="admAoVivoFb" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800">
-                            </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <input type="text" id="admAoVivoYtb" class="w-full bg-white border rounded-xl px-3 py-2 text-xs" placeholder="Link do YouTube">
+                            <input type="text" id="admAoVivoFb" class="w-full bg-white border rounded-xl px-3 py-2 text-xs" placeholder="Link do Facebook">
                         </div>
                     </div>
 
-                    <div class="bg-slate-100 p-3.5 rounded-2xl border border-slate-200 flex items-center space-x-3">
-                        <input type="checkbox" id="admDestAtivo" class="w-5 h-5 text-ieq-green rounded accent-ieq-green cursor-pointer shrink-0" checked>
-                        <label for="admDestAtivo" class="text-xs font-bold text-slate-800 cursor-pointer">
-                            Exibir Evento em Destaque na página inicial
-                        </label>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Título do Evento</label>
-                        <input type="text" id="admDestTitulo" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-800">
-                    </div>
-
-                    <div class="space-y-1.5">
-                        <label class="block text-xs font-bold text-slate-700">Foto do Evento</label>
-                        <input type="file" id="admDestFile" accept="image/*" onchange="previewImagemArquivo(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-ieq-green file:text-slate-950 cursor-pointer bg-slate-50 border border-slate-200 rounded-xl p-1">
-                        <input type="text" id="admDestImg" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 mt-1" placeholder="Ou cole o link da foto aqui" onchange="document.getElementById('imgPreviewAdm').src=this.value">
-                        <div class="mt-2 text-center">
-                            <img id="imgPreviewAdm" src="" class="h-32 w-full object-cover rounded-2xl border border-slate-200 mx-auto">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Data & Hora</label>
-                            <input type="text" id="admDestData" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-800">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Local</label>
-                            <input type="text" id="admDestLocal" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-800">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Descrição</label>
-                        <textarea id="admDestDesc" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-800"></textarea>
-                    </div>
-
-                    <button type="submit" class="bg-ieq-green hover:bg-ieq-greenHover text-slate-950 font-bold px-5 py-2.5 rounded-xl text-xs transition shadow-sm w-full">
-                        Salvar Configurações 🚀
-                    </button>
+                    <button type="submit" class="bg-ieq-green text-slate-950 font-bold px-6 py-3 rounded-xl text-xs w-full shadow-sm">Salvar Alterações</button>
                 </form>
             </div>
 
@@ -1037,7 +876,7 @@
     </main>
 
     <!-- Toast de Notificação -->
-    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-3 rounded-2xl text-xs font-bold shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2">
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-2xl text-xs font-bold shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2">
         <i class="fa-solid fa-circle-check text-ieq-green text-sm"></i>
         <span id="toastMsg">Ação realizada com sucesso!</span>
     </div>
@@ -1059,108 +898,89 @@
             }
         }
 
-        function toggleCelulas() {
-            const list = document.getElementById('listaCelulas');
-            const icon = document.getElementById('iconSetaCelulas');
-            list.classList.toggle('hidden');
-            icon.classList.toggle('fa-chevron-down');
-            icon.classList.toggle('fa-chevron-up');
-        }
-
         function mostrarToast(msg) {
             const toast = document.getElementById('toast');
             document.getElementById('toastMsg').innerText = msg;
             toast.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3000);
+            setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000);
         }
 
         function copiarPixNatal() {
             navigator.clipboard.writeText("igrejaquadrangularpampulha@gmail.com");
-            mostrarToast("Chave PIX copiada! Lembre-se de colocar na observação: Natal Feliz");
+            mostrarToast("Chave PIX copiada! Coloque na observação: Natal Feliz");
+        }
+
+        function copiarPix() {
+            navigator.clipboard.writeText("igrejaquadrangularpampulha@gmail.com");
+            mostrarToast("Chave PIX copiada com sucesso!");
         }
 
         function switchView(view) {
-            document.getElementById('viewPortal').classList.add('hidden');
-            document.getElementById('viewQuadrangular').classList.add('hidden');
-            document.getElementById('viewNatal').classList.add('hidden');
-            document.getElementById('viewVisitante').classList.add('hidden');
-            document.getElementById('viewTestemunho').classList.add('hidden');
-            document.getElementById('viewAdmin').classList.add('hidden');
+            ['viewPortal', 'viewQuadrangular', 'viewNatal', 'viewVisitante', 'viewTestemunho', 'viewAdmin'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
 
-            const inactiveClass = "px-3 py-1.5 text-[11px] sm:text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap shrink-0";
+            const inactiveClass = "px-4 py-2 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap shrink-0 flex items-center gap-1.5";
 
             document.getElementById('navPortal').className = inactiveClass;
-            document.getElementById('navQuadrangular').className = "px-3 py-1.5 text-[11px] sm:text-xs font-black rounded-full quadrangular-gradient text-white shadow-sm transition whitespace-nowrap shrink-0";
-            document.getElementById('navNatal').className = "px-3 py-1.5 text-[11px] sm:text-xs font-extrabold rounded-full gold-brush text-slate-950 shadow-sm transition whitespace-nowrap shrink-0";
+            document.getElementById('navQuadrangular').className = "px-4 py-2 text-xs font-black rounded-full quadrangular-gradient text-white shadow-md transition whitespace-nowrap shrink-0 flex items-center gap-1.5";
+            document.getElementById('navNatal').className = "px-4 py-2 text-xs font-extrabold rounded-full gold-brush text-slate-950 shadow-sm transition whitespace-nowrap shrink-0 flex items-center gap-1.5";
             document.getElementById('navVisitante').className = inactiveClass;
             document.getElementById('navTestemunho').className = inactiveClass;
             document.getElementById('navAdmin').className = inactiveClass;
 
             if (view === 'portal') {
                 document.getElementById('viewPortal').classList.remove('hidden');
-                document.getElementById('navPortal').className = "px-3 py-1.5 text-[11px] sm:text-xs font-bold rounded-full bg-ieq-green text-slate-950 shadow-sm transition whitespace-nowrap shrink-0";
+                document.getElementById('navPortal').className = "px-4 py-2 text-xs font-bold rounded-full bg-ieq-green text-slate-950 shadow-sm transition whitespace-nowrap shrink-0 flex items-center gap-1.5";
             } else if (view === 'quadrangular') {
                 document.getElementById('viewQuadrangular').classList.remove('hidden');
-                document.getElementById('navQuadrangular').className = "px-3 py-1.5 text-[11px] sm:text-xs font-black rounded-full quadrangular-gradient text-white shadow-md transition whitespace-nowrap shrink-0";
+                document.getElementById('navQuadrangular').className = "px-4 py-2 text-xs font-black rounded-full quadrangular-gradient text-white shadow-lg transition whitespace-nowrap shrink-0 flex items-center gap-1.5 animate-pulse";
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } else if (view === 'natal') {
                 document.getElementById('viewNatal').classList.remove('hidden');
-                document.getElementById('navNatal').className = "px-3 py-1.5 text-[11px] sm:text-xs font-black rounded-full gold-brush text-slate-950 shadow-md transition whitespace-nowrap shrink-0";
+                document.getElementById('navNatal').className = "px-4 py-2 text-xs font-black rounded-full gold-brush text-slate-950 shadow-md transition whitespace-nowrap shrink-0 flex items-center gap-1.5";
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } else if (view === 'visitante') {
                 document.getElementById('viewVisitante').classList.remove('hidden');
-                document.getElementById('navVisitante').className = "px-3 py-1.5 text-[11px] sm:text-xs font-bold rounded-full bg-ieq-green text-slate-950 shadow-sm transition whitespace-nowrap shrink-0";
+                document.getElementById('navVisitante').className = "px-4 py-2 text-xs font-bold rounded-full bg-ieq-green text-slate-950 shadow-sm transition whitespace-nowrap shrink-0 flex items-center gap-1.5";
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } else if (view === 'testemunho') {
                 document.getElementById('viewTestemunho').classList.remove('hidden');
-                document.getElementById('navTestemunho').className = "px-3 py-1.5 text-[11px] sm:text-xs font-bold rounded-full bg-amber-500 text-slate-950 shadow-sm transition whitespace-nowrap shrink-0";
+                document.getElementById('navTestemunho').className = "px-4 py-2 text-xs font-bold rounded-full bg-amber-500 text-slate-950 shadow-sm transition whitespace-nowrap shrink-0 flex items-center gap-1.5";
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } else if (view === 'admin') {
                 document.getElementById('viewAdmin').classList.remove('hidden');
-                document.getElementById('navAdmin').className = "px-3 py-1.5 text-[11px] sm:text-xs font-bold rounded-full bg-ieq-green text-slate-950 shadow-sm transition whitespace-nowrap shrink-0";
+                document.getElementById('navAdmin').className = "px-4 py-2 text-xs font-bold rounded-full bg-ieq-green text-slate-950 shadow-sm transition whitespace-nowrap shrink-0 flex items-center gap-1.5";
             }
         }
 
         function checkAdminAccess() {
             const senha = prompt("Digite a senha do painel da secretaria (Padrão: 1234):");
-            if (senha === "1234") {
-                switchView('admin');
-            } else if (senha !== null) {
-                alert("Senha incorreta!");
-            }
+            if (senha === "1234") { switchView('admin'); } else if (senha !== null) { alert("Senha incorreta!"); }
         }
 
-        function logoutAdmin() {
-            switchView('portal');
-        }
+        function logoutAdmin() { switchView('portal'); }
 
         function switchAdminTab(tab) {
-            document.getElementById('adminTabVisitantes').classList.add('hidden');
-            document.getElementById('adminTabTestemunhos').classList.add('hidden');
-            document.getElementById('adminTabAgenda').classList.add('hidden');
-            document.getElementById('adminTabDestaque').classList.add('hidden');
-
-            const inactiveBtn = "px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap shrink-0";
-
-            document.getElementById('tabVisBtn').className = inactiveBtn;
-            document.getElementById('tabTestBtn').className = inactiveBtn;
-            document.getElementById('tabAgendaBtn').className = inactiveBtn;
-            document.getElementById('tabDestBtn').className = inactiveBtn;
+            ['adminTabVisitantes', 'adminTabTestemunhos', 'adminTabAgenda', 'adminTabDestaque'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            ['tabVisBtn', 'tabTestBtn', 'tabAgendaBtn', 'tabDestBtn'].forEach(id => {
+                document.getElementById(id).className = "px-4 py-2.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap";
+            });
 
             if (tab === 'visitantes') {
                 document.getElementById('adminTabVisitantes').classList.remove('hidden');
-                document.getElementById('tabVisBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-ieq-green text-slate-950 transition whitespace-nowrap shrink-0";
+                document.getElementById('tabVisBtn').className = "px-4 py-2.5 text-xs font-bold rounded-xl bg-ieq-green text-slate-950 transition whitespace-nowrap";
             } else if (tab === 'testemunhos') {
                 document.getElementById('adminTabTestemunhos').classList.remove('hidden');
-                document.getElementById('tabTestBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-amber-500 text-slate-950 transition whitespace-nowrap shrink-0";
+                document.getElementById('tabTestBtn').className = "px-4 py-2.5 text-xs font-bold rounded-xl bg-amber-500 text-slate-950 transition whitespace-nowrap";
             } else if (tab === 'agenda') {
                 document.getElementById('adminTabAgenda').classList.remove('hidden');
-                document.getElementById('tabAgendaBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-ieq-orange text-white transition whitespace-nowrap shrink-0";
+                document.getElementById('tabAgendaBtn').className = "px-4 py-2.5 text-xs font-bold rounded-xl bg-ieq-orange text-white transition whitespace-nowrap";
             } else if (tab === 'destaque') {
                 document.getElementById('adminTabDestaque').classList.remove('hidden');
-                document.getElementById('tabDestBtn').className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-ieq-green text-slate-950 transition whitespace-nowrap shrink-0";
+                document.getElementById('tabDestBtn').className = "px-4 py-2.5 text-xs font-bold rounded-xl bg-ieq-green text-slate-950 transition whitespace-nowrap";
             }
         }
 
@@ -1173,47 +993,39 @@
                 trouxeFamilia: document.getElementById('visTrouxeFamilia').value,
                 qtdPessoas: document.getElementById('visQtdPessoas').value,
                 queroGrupo: document.getElementById('visQueroGrupo').checked,
-                pedido: document.getElementById('visPedido').value || "Nenhum pedido informado",
+                pedido: document.getElementById('visPedido').value || "Nenhum pedido",
                 data: new Date().toLocaleDateString('pt-BR')
             };
-
             try {
                 await window.addDoc(window.collection(window.dbFirestore, "visitantes"), novo);
                 document.getElementById('formVisitante').reset();
-                mostrarToast("Seja muito bem-vindo(a)! Suas informações foram enviadas.");
-            } catch (err) {
-                alert("Erro ao salvar dados.");
-            }
+                mostrarToast("Seja bem-vindo(a)! Dados enviados com sucesso.");
+            } catch (err) { alert("Erro ao salvar dados."); }
         }
 
         async function salvarTestemunhoFirebase(e) {
             e.preventDefault();
             const radios = document.getElementsByName('testContar');
-            let opcaoContar = "Apenas para o Pastor saber";
-            for (let r of radios) {
-                if (r.checked) { opcaoContar = r.value; break; }
-            }
+            let opcao = "Apenas para o Pastor saber";
+            for (let r of radios) { if (r.checked) { opcao = r.value; break; } }
 
-            const novoTestemunho = {
+            const novo = {
                 nome: document.getElementById('testNome').value,
                 whatsapp: document.getElementById('testWhatsapp').value || "Não informado",
                 texto: document.getElementById('testTexto').value,
-                contarNoCulto: opcaoContar,
+                contarNoCulto: opcao,
                 data: new Date().toLocaleDateString('pt-BR')
             };
-
             try {
-                await window.addDoc(window.collection(window.dbFirestore, "testemunhos"), novoTestemunho);
+                await window.addDoc(window.collection(window.dbFirestore, "testemunhos"), novo);
                 document.getElementById('formTestemunho').reset();
                 mostrarToast("Testemunho enviado com sucesso!");
-            } catch (err) {
-                alert("Erro ao enviar testemunho.");
-            }
+            } catch (err) { alert("Erro ao enviar."); }
         }
 
         async function adicionarEventoAgenda(e) {
             e.preventDefault();
-            const novoEvento = {
+            const novo = {
                 diaNum: document.getElementById('agendaDiaNum').value,
                 diaSemana: document.getElementById('agendaDiaSemana').value,
                 cor: document.getElementById('agendaCor').value,
@@ -1221,173 +1033,103 @@
                 desc: document.getElementById('agendaDesc').value,
                 criadoEm: new Date().getTime()
             };
-
             try {
-                await window.addDoc(window.collection(window.dbFirestore, "agenda"), novoEvento);
+                await window.addDoc(window.collection(window.dbFirestore, "agenda"), novo);
                 document.getElementById('agendaDiaNum').value = '';
                 document.getElementById('agendaDiaSemana').value = '';
                 document.getElementById('agendaTitulo').value = '';
                 document.getElementById('agendaDesc').value = '';
-                mostrarToast("Evento adicionado à Agenda!");
-            } catch (err) {
-                alert("Erro ao adicionar evento.");
-            }
-        }
-
-        function copiarPix() {
-            navigator.clipboard.writeText("igrejaquadrangularpampulha@gmail.com");
-            mostrarToast("Chave PIX copiada!");
+                mostrarToast("Evento adicionado à agenda!");
+            } catch (err) { alert("Erro."); }
         }
 
         async function removerVisitante(id) {
-            if (confirm("Deseja remover este cadastro?")) {
+            if(confirm("Remover cadastro?")) {
                 await window.deleteDoc(window.doc(window.dbFirestore, "visitantes", id));
-                mostrarToast("Registro removido.");
+                mostrarToast("Removido.");
             }
         }
-
         async function removerTestemunho(id) {
-            if (confirm("Deseja apagar este testemunho?")) {
+            if(confirm("Remover testemunho?")) {
                 await window.deleteDoc(window.doc(window.dbFirestore, "testemunhos", id));
-                mostrarToast("Testemunho removido.");
+                mostrarToast("Removido.");
             }
         }
-
         async function removerEventoAgenda(id) {
-            if (confirm("Remover este evento da agenda?")) {
+            if(confirm("Remover evento?")) {
                 await window.deleteDoc(window.doc(window.dbFirestore, "agenda", id));
-                mostrarToast("Evento removido.");
+                mostrarToast("Removido.");
             }
         }
 
         async function salvarDestaqueFirebase(e) {
             e.preventDefault();
-            const urlLink = document.getElementById('admDestImg').value;
-            const imgFinal = imagemTemporariaBase64 || urlLink || document.getElementById('destaqueImagem').src;
-
-            const dadosDestaque = {
+            const dados = {
                 aoVivo: document.getElementById('admAoVivoCheck').checked,
                 linkYtb: document.getElementById('admAoVivoYtb').value,
                 linkFb: document.getElementById('admAoVivoFb').value,
-                natalAtivo: document.getElementById('admNatalCheck').checked,
-                ativo: document.getElementById('admDestAtivo').checked,
-                titulo: document.getElementById('admDestTitulo').value,
-                imagem: imgFinal,
-                dataHora: document.getElementById('admDestData').value,
-                local: document.getElementById('admDestLocal').value,
-                desc: document.getElementById('admDestDesc').value
+                natalAtivo: document.getElementById('admNatalCheck').checked
             };
-
             try {
-                await window.setDoc(window.doc(window.dbFirestore, "configuracoes", "destaque"), dadosDestaque);
-                imagemTemporariaBase64 = null;
-                document.getElementById('admDestFile').value = '';
-                mostrarToast("Configurações atualizadas!");
-            } catch (err) {
-                alert("Erro ao atualizar configurações.");
-            }
+                await window.setDoc(window.doc(window.dbFirestore, "configuracoes", "destaque"), dados, { merge: true });
+                mostrarToast("Configurações salvas!");
+            } catch(err) { alert("Erro ao salvar."); }
         }
 
         window.renderizarVisitantesAdmin = function(visitantes) {
             document.getElementById('statVisitantes').innerText = visitantes.length;
             document.getElementById('statGrupoWhats').innerText = visitantes.filter(v => v.queroGrupo).length;
-            document.getElementById('statOracoes').innerText = visitantes.filter(v => v.pedido && v.pedido !== "Nenhum pedido informado").length;
+            document.getElementById('statOracoes').innerText = visitantes.filter(v => v.pedido && v.pedido !== "Nenhum pedido").length;
 
-            const containerVis = document.getElementById('listaVisitantesAdmin');
-            containerVis.innerHTML = visitantes.map(v => {
-                const wppClean = v.whatsapp ? v.whatsapp.replace(/\D/g, '') : '';
-                const msgWpp = `Olá%20${encodeURIComponent(v.nome)},%20graça%20e%20paz!%20Seja%20muito%20bem-vindo(a)%20à%20Quadrangular%20Pampulha.`;
-
-                return `
-                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-2">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="font-bold text-sm text-slate-900">${v.nome}</h4>
-                                <div class="flex items-center gap-1.5 mt-1 flex-wrap">
-                                    <span class="text-[10px] font-bold bg-slate-200 text-slate-700 px-2 py-0.5 rounded-md">${v.tipo}</span>
-                                    <span class="text-[10px] text-slate-400">Data: ${v.data}</span>
-                                </div>
-                            </div>
-                            <div class="flex space-x-1.5">
-                                <a href="https://wa.me/55${wppClean}?text=${msgWpp}" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded-xl text-xs font-bold" title="WhatsApp">
-                                    <i class="fa-brands fa-whatsapp"></i>
-                                </a>
-                                <button onclick="removerVisitante('${v.id}')" class="bg-red-100 hover:bg-red-200 text-red-600 p-2 rounded-xl text-xs" title="Excluir">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="text-xs bg-white p-3 rounded-xl border border-slate-200/60">
-                            <strong class="text-slate-500 block mb-0.5">Pedido de Oração:</strong>
-                            <p class="text-slate-700 italic">"${v.pedido}"</p>
-                        </div>
+            document.getElementById('listaVisitantesAdmin').innerHTML = visitantes.map(v => `
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex justify-between items-start">
+                    <div>
+                        <h4 class="font-bold text-sm text-slate-900">${v.nome}</h4>
+                        <p class="text-xs text-slate-500">${v.whatsapp} • ${v.tipo}</p>
+                        <p class="text-xs text-slate-700 italic mt-1">"${v.pedido}"</p>
                     </div>
-                `;
-            }).join('') || '<p class="text-xs text-slate-400 italic">Nenhum visitante cadastrado.</p>';
+                    <button onclick="removerVisitante('${v.id}')" class="bg-red-100 text-red-600 p-2 rounded-xl text-xs"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('') || '<p class="text-xs text-slate-400 italic">Nenhum cadastro.</p>';
         };
 
         window.renderizarTestemunhosAdmin = function(testemunhos) {
-            const containerTest = document.getElementById('listaTestemunhosAdmin');
-            containerTest.innerHTML = testemunhos.map(t => {
-                return `
-                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-2">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="font-bold text-sm text-slate-900">${t.nome}</h4>
-                                <span class="text-[10px] text-slate-400">Data: ${t.data}</span>
-                            </div>
-                            <button onclick="removerTestemunho('${t.id}')" class="bg-red-100 hover:bg-red-200 text-red-600 p-2 rounded-xl text-xs">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                        <div class="text-xs bg-white p-3 rounded-xl border border-slate-200/60">
-                            <p class="text-slate-800 font-medium">"${t.texto}"</p>
-                        </div>
+            document.getElementById('listaTestemunhosAdmin').innerHTML = testemunhos.map(t => `
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex justify-between items-start">
+                    <div>
+                        <h4 class="font-bold text-sm text-slate-900">${t.nome}</h4>
+                        <p class="text-xs text-slate-800 mt-1 font-medium">"${t.texto}"</p>
                     </div>
-                `;
-            }).join('') || '<p class="text-xs text-slate-400 italic">Nenhum testemunho recebido.</p>';
+                    <button onclick="removerTestemunho('${t.id}')" class="bg-red-100 text-red-600 p-2 rounded-xl text-xs"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('') || '<p class="text-xs text-slate-400 italic">Nenhum testemunho.</p>';
         };
 
         window.renderizarAgendaGeral = function(agenda) {
             agenda.sort((a, b) => parseInt(a.diaNum || 0) - parseInt(b.diaNum || 0));
-
-            const pubContainer = document.getElementById('containerAgendaPublica');
-            if (agenda.length === 0) {
-                pubContainer.innerHTML = '<p class="text-xs text-slate-400 italic col-span-2 text-center py-2">Nenhum evento agendado.</p>';
-            } else {
-                pubContainer.innerHTML = agenda.map(item => `
-                    <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex items-center space-x-3">
-                        <div class="${item.cor || 'quadrangular-gradient text-white'} px-3 py-2 rounded-xl text-center font-bold min-w-[50px] shadow-sm">
-                            <span class="block text-[10px] uppercase">${item.diaSemana || 'DIA'}</span>
-                            <span class="text-base leading-none">${item.diaNum || '00'}</span>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-xs text-slate-900">${item.titulo}</h4>
-                            <p class="text-[11px] text-slate-500">${item.desc}</p>
-                        </div>
+            
+            document.getElementById('containerAgendaPublica').innerHTML = agenda.map(item => `
+                <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 flex items-center space-x-3">
+                    <div class="${item.cor || 'quadrangular-gradient text-white'} px-3 py-2 rounded-xl text-center font-bold min-w-[50px] shadow-sm">
+                        <span class="block text-[10px] uppercase">${item.diaSemana || 'DIA'}</span>
+                        <span class="text-base leading-none">${item.diaNum || '00'}</span>
                     </div>
-                `).join('');
-            }
-
-            const admContainer = document.getElementById('listaAgendaAdmin');
-            if (agenda.length === 0) {
-                admContainer.innerHTML = '<p class="text-xs text-slate-400 italic">Nenhum evento na agenda.</p>';
-            } else {
-                admContainer.innerHTML = agenda.map(item => `
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex justify-between items-center">
-                        <div class="flex items-center space-x-3">
-                            <span class="${item.cor || 'quadrangular-gradient text-white'} px-2.5 py-1 rounded-lg text-xs font-bold">${item.diaNum} (${item.diaSemana})</span>
-                            <div>
-                                <h5 class="font-bold text-xs text-slate-900">${item.titulo}</h5>
-                                <p class="text-[11px] text-slate-500">${item.desc}</p>
-                            </div>
-                        </div>
-                        <button onclick="removerEventoAgenda('${item.id}')" class="bg-red-100 hover:bg-red-200 text-red-600 p-2 rounded-xl text-xs">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
+                    <div>
+                        <h4 class="font-bold text-xs text-slate-900">${item.titulo}</h4>
+                        <p class="text-[11px] text-slate-500">${item.desc}</p>
                     </div>
-                `).join('');
-            }
+                </div>
+            `).join('') || '<p class="text-xs text-slate-400 italic col-span-2">Nenhum evento agendado.</p>';
+
+            document.getElementById('listaAgendaAdmin').innerHTML = agenda.map(item => `
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex justify-between items-center">
+                    <div class="flex items-center space-x-2">
+                        <span class="${item.cor || 'quadrangular-gradient text-white'} px-2 py-1 rounded text-xs font-bold">${item.diaNum}/${item.diaSemana}</span>
+                        <span class="text-xs font-bold">${item.titulo}</span>
+                    </div>
+                    <button onclick="removerEventoAgenda('${item.id}')" class="bg-red-100 text-red-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('') || '<p class="text-xs text-slate-400 italic">Nenhum evento.</p>';
         };
     </script>
 </body>
